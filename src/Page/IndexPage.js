@@ -1,66 +1,46 @@
 import React from 'react';
+import Nav from './../Component/Dashboard/Nav';
+import Main from './../Component/Dashboard/Main';
+import MainResponsive from './../Component/Dashboard/MainResponsive';
+import ResponsiveNav from './../Component/Dashboard/ResponsiveNav';
 
 class IndexPage extends React.Component {
+    constructor(props) {
+        super(props); 
+        this.state={
+            stringMess:"ZaloPay - Ứng dụng thanh toán di động, chuyển-nhận tiền nhanh, an toàn theo tiêu Chuẩn Quốc Tế PCI-DSS.",
+            toggleMiniMenu: false
+        }
+    }
+    componentDidMount() { 
+        if( window.innerWidth >= 0 && window.innerWidth <= 768 ){
+            this.setState({
+                toggleMiniMenu: true,
+            });
+        }
+        window.addEventListener("resize",this.toggleMiniMenu);
+    }
+    toggleMiniMenu = () => {
+        if( window.innerWidth >= 0 && window.innerWidth <= 768 ){
+            this.setState({
+                toggleMiniMenu: true,
+            });
+        }
+        else {
+            this.setState({
+                toggleMiniMenu: false,
+            });
+        }
+    }
     render(){
+        var height = window.innerHeight;
         return(
-            <div className="container-wrap">
-                
-                <nav className="navMenu">
-                    <div className="menuTab">
-                        <div className="avatar">
-                            <img src="./avt.jpg" alt="" />
-                            <span className="avtOnline"></span>
-                        </div>
-                        <div className="tabList">
-                            <div><i className="far fa-comment-dots"></i></div>
-                            <div><i className="far fa-address-book"></i></div>
-                            <div><i className="fas fa-at"></i></div>
-                            <div><i className="far fa-check-square"></i></div>
-                        </div>
-                        <div className="tabList-bottom">
-                            <div><i className="far fa-star"></i></div>
-                            <div><i className="fas fa-cog"></i></div>
-                        </div>
-                    </div>
-                    <div className="chatList">
-                        <div className="header">
-                            <div className="usrName">
-                                Chat - Gió Biển
-                            </div>
-                            <div className="search">
-                                <input type="text" placeholder="Tìm..."/>
-                                <div className="i"><i className="fas fa-user-plus"></i></div>
-                                <div className="i"><i className="fas fa-plus"></i></div>
-                            </div>
-                        </div>
-                        <div className="body">
-                            <div className="message-list">
-                                <div className="messageFilter">
-                                    <div className="drop-title">
-                                        Tin nhắn <i class="fas fa-caret-down"></i>
-                                        <div className="drop-content">
-                                            <div>Tất cả tin nhắn</div>
-                                            <div>Tin nhắn chưa đọc</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="list">
-                                        <div className="messageCard">
-                                            <img src="./avt.jpg" alt="" />
-                                            
-                                        </div>
-                                </div>
-                            </div>
-                            <div className="suggest-fr">
-
-                            </div>
-                        </div>
-                    </div>
+            <div style={{ "height": height*(99.9/100) }} className="container-wrap">
+                <nav  className="navMenu">
+                    <Nav/>
+                    <ResponsiveNav/>
                 </nav>
-                <main className="bodyMessage">
-b
-                </main>
-                
+                { !this.state.toggleMiniMenu ? <Main stringMess = { this.state.stringMess } /> : <MainResponsive/> }
             </div>
         );
     }

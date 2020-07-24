@@ -1,6 +1,6 @@
 import React from 'react';
 
-class IndexPage extends React.Component {
+class NewFr extends React.Component{
     render(){
         return(
             <div>
@@ -9,4 +9,4 @@ class IndexPage extends React.Component {
         );
     }
 }
-export default IndexPage;
+export default NewFr;
