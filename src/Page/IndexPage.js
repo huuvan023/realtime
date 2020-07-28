@@ -45,7 +45,7 @@ class IndexPage extends React.Component {
         }
     }
     componentDidMount() {
-        if( window.innerWidth >= 0 && window.innerWidth <= 768 ){
+        if( window.innerWidth >= 0 && window.innerWidth <= 450 ){
             this.setState({
                 toggleMiniMenu: true,
             });
@@ -132,7 +132,7 @@ class IndexPage extends React.Component {
     }
     */
     toggleMiniMenu = () => {
-        if( window.innerWidth >= 0 && window.innerWidth <= 768 ){
+        if( window.innerWidth >= 0 && window.innerWidth <= 450 ){
             this.setState({
                 toggleMiniMenu: true,
             });
@@ -162,7 +162,6 @@ class IndexPage extends React.Component {
                     currentPeerUser : item,
                 });
             }
-            console.log(this.currentPeerUser)
             if( this.currentUserID && this.state.currentPeerUser ) {
                 this.groupChatID = Math.abs(this.hashString(this.currentUserID) - this.hashString(this.state.currentPeerUser.id) ).toString();
             }
@@ -173,7 +172,6 @@ class IndexPage extends React.Component {
             .collection(this.groupChatID)
             .onSnapshot((Snapshot) => {
                 Snapshot.docChanges().forEach((changed) => {
-                    console.log("vo dc snapshot")
                         listMSGArr.push(changed.doc.data());
                 })
                 this.setState({
@@ -344,15 +342,17 @@ class IndexPage extends React.Component {
         :
         ( <div style={{ "height": height*(99.9/100) }} className="container-wrap">
                 <nav  className="navMenu">
-                    <Nav/>
+                    <Nav history = { this.props.history } />
                     <ResponsiveNav/>
                 </nav>
-                { !this.state.toggleMiniMenu ? <Main onsetCurrentPeer = { this.onsetCurrentPeer } 
+                { !this.state.toggleMiniMenu ?
+                <Main onsetCurrentPeer = { this.onsetCurrentPeer } 
                 currentPeerUser = { this.state.currentPeerUser }
                 onFilterUser = { this.onFilterUser } 
                 currentUserName = { this.currentUserName }
                 viewUsers = { viewUsers } 
                 onTest = { this.onTest }
+                height = { height }
                 currentUserID = { this.currentUserID }
                 onSendMessage = { this.onSendMessageClick }
                 onLogOut = { this.onLogOut } 

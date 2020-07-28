@@ -92,7 +92,7 @@ Nav menu
   width: 100%;
   padding: 10px;
 }
-.menuTab .avatar img {
+.menuTab .avatar .avtNavMain {
   width: 45px;
   border-radius: 100%;
   border: 1.5px solid white;
@@ -113,14 +113,27 @@ Nav menu
   bottom: 0;
   width: 100%;
 }
-
+.menuItemShowLogout {
+  display: block;
+  position: absolute;
+  bottom: 0;
+}
 .menuTab >  .tabList-bottom > div{
   display: flex;
+  position: relative;
   width: 100%;
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  padding: 20px;
+  margin-bottom: 10px !important;
+}
+.MuiButtonBase-root{
+  width: 100% !important;
+  height: 100% !important;
+  padding: 20px 0 !important;
+}
+.menuITchild { 
+  padding: 10px 20px !important;
 }
 .chatList {
   width: 400px;
@@ -134,7 +147,7 @@ Nav menu
 } 
 .chatList .header {
   width: 100%;
-  height: 15%;
+  max-height: 15%;
   padding: 10px 10px 20px 10px;
   border-bottom: 0.5px solid rgb(170, 170, 170);
 }
@@ -143,7 +156,7 @@ Nav menu
 
 }
 .chatList .header .search .i{
-  width: 10%;
+  width: 15%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -158,7 +171,7 @@ Nav menu
   border-radius: 50px;
   font-size: 15px;
   outline: none;
-  width: 80%;
+  width: 70%;
   padding: 5px 15px 5px 15px;
   border: 0.5px solid rgb(177, 177, 177);
 }
@@ -190,7 +203,7 @@ Nav menu
 }
 .chatList .body > .message-list .messageFilter {
   font-size: 14px;
-  height: 10%;
+  max-height: 10%;
 }
 .messageFilter .drop-title {
   position: relative;
@@ -237,7 +250,7 @@ Nav menu
 }
 .message-list .list .messageCard img {
   max-width: 100%;
-  max-height: 50px;
+  max-height: 100%;
   border-radius: 100%;
 }
 
@@ -248,18 +261,15 @@ Nav menu
   
 }
 .container-wrap .bodyMessage > .mainbd-head {
-  height: 15%;
   border-bottom: 1px solid rgb(167, 167, 167);
   padding: 10px 20px;
+  align-items: center;
   display: flex;
 }
 .wrapMessbd {
   height: 100%;
   padding: 0 10px;
 }
-.wrapMessbdWrap {
-  height: 75%;
-};
 .container-wrap .bodyMessage  .mainbd-body {
   display: flex;
   flex-direction: column;
@@ -342,14 +352,16 @@ Nav menu
 .container-wrap .bodyMessage > .mainbd-ft {
   height: 10%;
   padding: 10px;
+display: flex;
+justify-content: center;
 }
 .container-wrap .bodyMessage > .mainbd-ft .mainbd-ft-bd {
   height: 100%;
-  width: 100%;
+  width: 80%;
   display: flex;
 }
 .bodyMessage > .mainbd-ft .mainbd-ft-bd > .ic-sugg-mainbd {
-  width: 10%;
+  width: 25%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -357,7 +369,10 @@ Nav menu
   font-size: 30px;
   cursor: pointer;
 }
-.bodyMessage > .mainbd-ft .mainbd-ft-bd > .ic-sugg-mainbd:hover {
+.bodyMessage > .mainbd-ft .mainbd-ft-bd #icon {
+  margin-right: 10px;
+}
+.bodyMessage > .mainbd-ft .mainbd-ft-bd  #img:hover,.bodyMessage > .mainbd-ft .mainbd-ft-bd #icon:hover {
   color: black;
 }
 .bodyMessage > .mainbd-ft .mainbd-ft-bd > .bd-field-mainbd {
@@ -403,9 +418,10 @@ Nav menu
   width: 50%;
 }
 .bodyMessage > .mainbd-head .mainbd-h-inf > h4 {
-  font-size: 25px;
+  font-size: 30px;
   margin-bottom: 5px;
-  font-weight: bold;
+  font-family:"Comic Sans MS", cursive, sans-serif;
+  font-weight: 500;
 }
 #onlCir {
   width: 10px !important;
@@ -449,7 +465,7 @@ Nav menu
 .bodyMessage > .mainbd-head .mainbd-h-opt > .div2,.bodyMessage > .mainbd-head .mainbd-h-opt > .div3 {
   width: 10%;
   height: 100%;
-  margin-left: 5px;
+  margin-left: auto;
   display: flex;
   align-items: center;
   font-size: 25px;
@@ -460,9 +476,9 @@ Nav menu
   color: rgb(141, 141, 141);
 }
 .container-wrap .bodyMessage > .mainbd-head > img {
-  height: 100%;
+  height: 80px;
   border-radius: 100%;
-  width: 100px;
+  width: 80px;
 }
 .messageCard .mess-summary {
   display: flex;
@@ -532,7 +548,8 @@ Nav menu
   display: grid;
   max-height: 45%;
   width: 100%;
-  grid-template-columns: 25% 40% 35%;
+  grid-template-columns: 20% 40% 40%;
+  margin-bottom: 5px;
 } 
 .list-fr-crd .list-fr-img {
   height: 100%;
@@ -577,43 +594,54 @@ Nav menu
   background-color: rgb(245, 244, 244);
 }
 .list-fr-crd > .list-fr-img img {
-  width: 100%;
-  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
   border-radius: 100%;
 }
 /*--------------------------------------------RESPONSIVE----------------------------------------*/
 
 @media screen and (max-width: 1024px) {
-  .chatList .header {
-    height: 8%;
-    padding: 8px;
+  .bodyMessage > .mainbd-head .mainbd-h-inf > h4 {
+    font-size: 25px;
+  }
+  .chatList .body {
+    height: 90%;
+  }
+  .bodyMessage > .mainbd-head .mainbd-h-opt > .div2,.bodyMessage > .mainbd-head .mainbd-h-opt > .div3 {
+    font-size: 20px;
+  }
+  .container-wrap .bodyMessage > .mainbd-head > img {
+    width: 70px;
+    height: 70px;
   }
   .list-fr-crd .list-fr-ft button {
     font-size: 10px;
   }
-  .wrapMessbdWrap {
-    height: 87%;
-  }
-  .container-wrap .bodyMessage > .mainbd-ft {
-    height: 5%;
-  }
-  .container-wrap .bodyMessage > .mainbd-head   {
-    height: 8%;
-  }
-  .chatList .body {
-    height: 92%;
-  }
-  .chatList .body > .message-list .messageFilter {
-    height: 5%;
-  }
-  .container {
-    height: 95%;
-  }
 }
- 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 450px) {
+  .bodyMessage > .mainbd-head .mainbd-h-inf > h4 {
+    font-size: 16px;
+  }
+  .navMenu .menuTab-respon {
+    display: block;
+  }
   .chatList {
     display: none !important;
+  }
+  .navMenu .menuTab {
+    display: none;
+  }
+}
+@media screen and (max-width: 768px) {
+  .bodyMessage > .mainbd-head .mainbd-h-inf > h4 {
+    font-size: 18px;
+  }
+  .container-wrap .bodyMessage > .mainbd-head > img {
+    width: 50px;
+    height: 50px;
+  }
+  .bodyMessage > .mainbd-head .mainbd-h-opt > .div1 {
+    display: none;
   }
   .container-wrap .navMenu {
     width: 90px;
@@ -621,14 +649,8 @@ Nav menu
   .menuTab-respon > .tabList > div {
     margin: 10px;
   }
-  .navMenu .menuTab-respon {
-    display: block;
-  }
-  .navMenu .menuTab {
-    display: none;
-  }
   .container-wrap .bodyMessage {
-    width: 95%;
+    width: 100%;
   }
 }
 
@@ -2641,6 +2663,44 @@ iframe {
   color: #57b846;
   
 }
+/*Cusom txt*/
+@import url(https://fonts.googleapis.com/css?family=Lobster);
+.circle {
+  margin: auto;
+  height: 300px;
+  position: relative;
+  font-family: 'Lobster', cursive;
+  width: 300px;
+  border-radius: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+h1 {
+  position: absolute;
+  bottom: 0;
+  color: #D5E2D6;
+  text-align: center;
+  line-height: 50px;
+  -moz-transform: scale(1) rotate(-5deg) translateX(0px) translateY(0px) skewX(1deg) skewY(1deg);
+-webkit-transform: scale(1) rotate(-5deg) translateX(0px) translateY(0px) skewX(1deg) skewY(1deg);
+-o-transform: scale(1) rotate(-5deg) translateX(0px) translateY(0px) skewX(1deg) skewY(1deg);
+-ms-transform: scale(1) rotate(-5deg) translateX(0px) translateY(0px) skewX(1deg) skewY(1deg);
+transform: scale(1) rotate(-5deg) translateX(0px) translateY(0px) skewX(1deg) skewY(1deg);
+  /*-----------------------*/
+  text-shadow: 1px 1px #4A744D, 2px 2px #4A744D, 3px 3px #4A744D, 4px 4px #4A744D, 5px 5px #4A744D, 6px 6px #4A744D, 7px 7px #4A744D, 8px 8px #4A744D, 9px 9px #4A744D, 10px 10px #4A744D, 11px 11px #4A744D, 12px 12px #4A744D, 13px 13px #4A744D, 14px 14px #4A744D, 15px 15px #4A744D, 16px 16px #4A744D, 17px 17px #4A744D, 18px 18px #4A744D, 19px 19px #4A744D, 20px 20px #4A744D, 21px 21px #4A744D, 22px 22px #4A744D, 23px 23px #4A744D, 24px 24px #4A744D, 25px 25px #4A744D, 26px 26px 6px #06520C;
+  
+}
+
+span:nth-child(3), span:nth-child(7) { 
+font-size: 5vw;
+}
+
+span:nth-child(1), span:nth-child(9), span:nth-child(5)  {
+  font-size: 10vw;
+}
+
 
 
 /*------------------------------------------------------------------

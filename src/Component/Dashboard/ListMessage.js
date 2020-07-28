@@ -19,7 +19,7 @@ class ListMessage extends React.Component {
                 }
                 if ( item.idFrom === this.props.currentPeerUserid ) {
                     return (
-                        <div className="msg-dpl">
+                        <div key={ index } className="msg-dpl">
                             <img src="./avt.jpg" alt=""/>
                             <div>
                             <span>{ item.content }</span>

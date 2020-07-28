@@ -1,10 +1,10 @@
 import React, { Fragment } from 'react';
 import ListMessage from './ListMessage';
+import WelCome from './Welcome'
 
 class MainBody extends React.Component{
     render() {
         var renderListMSG = "";
-        console.log(this.props.listMessage)
         if( this.props.listMessage.length > 0 ) {
             renderListMSG = <ListMessage 
             currentUserID = { this.props.currentUserID }
@@ -14,7 +14,7 @@ class MainBody extends React.Component{
         return this.props.currentPeerUser ? 
         (
             <Fragment>
-                <div className="mainbd-head">
+                <div className="mainbd-head" style = {{ "height": this.props.offSetHeight }}>
                     <img src="./avt.jpg" alt="" />
                     <div className="mainbd-h-inf">
                         <h4>{ this.props.currentPeerUser !== null ? this.props.currentPeerUser.name : "" }</h4>
@@ -29,7 +29,7 @@ class MainBody extends React.Component{
                         <div onClick={ this.props.onLogOut } className="div3"><i className="fas fa-ellipsis-h"></i></div>
                     </div>
                 </div>
-                <div className="wrapMessbdWrap">
+                <div style= {{ "height":this.props.height - 60 - this.props.offSetHeight  }} className="wrapMessbdWrap">
                     <div className="scrollbar wrapMessbd scrollbar-juicy-peach mx-auto ">
                         <div className="mainbd-body">
                            
@@ -39,10 +39,11 @@ class MainBody extends React.Component{
                     </div>
                 </div>
 
-                <div className="mainbd-ft">
+                <div style={{"height": 60 }} className="mainbd-ft">
                     <div className="mainbd-ft-bd">
                         <div onClick = { () => { this.props.onOpenListSticker() } } className="ic-sugg-mainbd">
-                            <i className="far fa-smile"></i>
+                            <i id="img" className="far fa-images"></i>
+                            <i id="icon" className="far fa-smile ml-3"></i>
                         </div>
                         <div className="bd-field-mainbd">
                             <input value={ this.props.inpuValue } type="text" onChange = { (e) => { this.props.onChangeInputValue(e.target.value) } } 
@@ -56,7 +57,9 @@ class MainBody extends React.Component{
             </Fragment>
         )
         :
-        (<div>Khong co du lieu</div>)
+        (
+            <WelCome/>
+        )
     }
 }
 export default MainBody;

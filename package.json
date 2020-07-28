@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@material-ui/core": "^4.11.0",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
@@ -10,6 +11,7 @@
     "gatsby": "^2.24.11",
     "mdbreact": "^4.27.0",
     "react": "^16.13.1",
+    "react-confirm-alert": "^2.6.1",
     "react-dom": "^16.13.1",
     "react-panelgroup": "^1.0.12",
     "react-router-dom": "^5.2.0",
@@ -36,5 +38,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "devDependencies": {}
 }

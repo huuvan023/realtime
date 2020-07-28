@@ -12,16 +12,23 @@ class Main extends React.Component{
             checkClickUserID: null,
             onOpenDropTitle: false
         }
+        this.myref = React.createRef();
     }
     onShowListUsers = (listUser) => {
         var result = listUser.map((item, index) => {
             let classname = "";
-            if( item.id ===  this.state.checkClickUserID ) {
-                classname = "list chatUserActive";
+            if( this.state.checkClickUserID !== null){
+                if( item.id ===  this.state.checkClickUserID.id ) {
+                    classname = "list chatUserActive";
+                }
+                else {
+                    classname =" list"
+                }
             }
             else {
                 classname =" list"
             }
+        
             return <ListUser onsetCurrentPeer = { (item) => { this.props.onsetCurrentPeer(item) } } 
                 onSetActivePeerUser = { this.onSetActivePeerUser }            
                 className = { classname }
@@ -41,6 +48,9 @@ class Main extends React.Component{
             if( this.state.onOpenDropTitle ) {
                 dropStyle = "block";
             }
+            var heightElement = 0;
+            if(  this.myref.current )
+                heightElement = this.myref.current.offsetHeight;
         return(
             
             <Fragment>
@@ -50,7 +60,7 @@ class Main extends React.Component{
                       ]}>
                 <Content >
                     <div className="chatList">
-                    <div className="header">
+                    <div className="header" ref={ this.myref }>
                         <div className="usrName">
                             Chat - { this.props.currentUserName }
                         </div>
@@ -122,6 +132,8 @@ class Main extends React.Component{
                     <MainBody currentUserName = { this.props.currentUserName } 
                     currentPeerUser = { this.props.currentPeerUser }
                     onLogOut = { this.props.onLogOut } 
+                    offSetHeight = { heightElement }
+                    height = { this.props.height }
                     currentUserID = { this.props.currentUserID }
                     onOpenListSticker = { this.props.onOpenListSticker }
                     onSendMessage = { this.props.onSendMessage }

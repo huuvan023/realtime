@@ -1,5 +1,6 @@
 import React from 'react';
 
+
 class ListUser extends React.Component {
     constructor(props) {
         super(props);
@@ -27,8 +28,7 @@ class ListUser extends React.Component {
                                 <p className="summ-mess-bd">
                                     asdsadsaaddsa...
                                 </p>
-                                <span  className="summ-mess-more">
-                                </span>
+                                { /*<span  className="summ-mess-more"> </span>*/}
                             </div>
                         </div>
                     </div>
