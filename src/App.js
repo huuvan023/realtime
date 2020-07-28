@@ -1,9 +1,10 @@
-import React, { Fragment } from 'react';
-import routes from './Lib/Routes';
+import React from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import './App.css';
 import firebase from './Services/Firebase';
 import { toast, ToastContainer } from 'react-toastify';
+import routes from './Lib/Routes'
+ 
 
 class App extends React.Component {
   constructor(props){
@@ -12,20 +13,6 @@ class App extends React.Component {
       authenticated: false,
       loading: true,
     };
-  }
-  showToast = (type,message) => {
-    switch(type) {
-      case 0 :
-        toast.warning(message);
-      break;
-
-      case 1 :
-        toast.success(message);
-      break;
-
-      default:
-      break;
-    }
   }
   componentDidMount() {
     firebase.auth().onAuthStateChanged( user => {
@@ -43,31 +30,52 @@ class App extends React.Component {
       }
     })
   }
+  showToast = (type,message) => {
+    switch(type) {
+      case 0 :
+        toast.warning(message);
+      break;
+
+      case 1 :
+        toast.success(message);
+      break;
+
+      default:
+      break;
+    }
+  }
   render(){
-    return this.state.loading === false ? 
+    /*
+    <Route path="/" exact={true}><LoginPage showToast = { this.showToast } /></Route>
+            <Route path="/dashboard" ><IndexPage/></Route>
+            <Route path="/register"><RegisterPage  history={this.props.history} /></Route>
+            <Route path="/forgetpassword"><ForgetPWPage/></Route>
+            <Route path=""><NotFoundPage/></Route>*/
+    return false ? 
     (
       <div className="spinner-border text-success" role="status">
         <span className="sr-only text-center">Loading...</span>
       </div>
     ) 
-    : 
+    :
     (<Router>
-      
-          <ToastContainer
-          autoClose = {2000}
-          hideProgressBar = {true}
-          position = { toast.POSITION.BOTTOM_CENTER } />
+         
+          
+              <ToastContainer
+              autoClose = {1000}
+              hideProgressBar = {true}
+              position = { toast.POSITION.BOTTOM_CENTER } />
           <Switch>
-            { routes.map((route, index) => {
-              return <Route
-                      key = { index }
-                      path = { route.path }
-                      exact = { route.exact }
-                      component = { route.main } 
-                      />
-            }) }
+            { routes.map((r,index) => {
+              return <Route path={ r.path }
+              key = { index }
+              exact = { r.exact}
+              component = {r.main}
+              />
+            }) 
+          }
           </Switch>
-
+          
       </Router>
     );
   }

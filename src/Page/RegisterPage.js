@@ -1,6 +1,9 @@
 import React, { Fragment } from 'react';
 import '../App.css';
-import { Link } from 'react-router-dom';    
+import { Link, Redirect } from 'react-router-dom';    
+import LoginString from './../Lib/LoginString';
+import firebase from './../Services/Firebase';
+
 
 class RegisterPage extends React.Component {
     constructor(props){
@@ -27,9 +30,43 @@ class RegisterPage extends React.Component {
         });
     }
     async onHandleSubmitF (event) {
-        event.preventDefault();
         const {password,email,name} = this.state;
-        console.log("email",this.state.email);
+        event.preventDefault();
+        try {
+            firebase.auth().createUserWithEmailAndPassword(email.toString(),password.toString())
+            .then( async result => {
+                firebase.firestore().collection("users")
+                .add({
+                    name : name,
+                    id: result.user.uid,
+                    email,
+                    password,
+                    URL: "",
+                    message: [{ notificationId: "", number: 0}]
+                })
+                .then((docRef) => {
+                    localStorage.setItem(LoginString.ID, result.user.uid);
+                    localStorage.setItem(LoginString.name, name);
+                    localStorage.setItem(LoginString.email, email);
+                    localStorage.setItem(LoginString.password, password);
+                    localStorage.setItem(LoginString.photoURL, "");
+                    localStorage.setItem(LoginString.UPLOAD_CHANGED, "state_changed");
+                    localStorage.setItem(LoginString.description, "");
+                    localStorage.setItem(LoginString.firebaseDocumentID, docRef.id);
+                    this.setState({
+                        name: "",
+                        password: "",
+                        email: "",
+                    });
+                    this.props.history.push("/dashboard")
+                })
+            }).catch(error=>{
+                console.log("Error while add user", error);
+            });
+        }
+        catch(error) {
+            console.log("Error try catch", error)
+        };
     } 
     render(){
         return(
@@ -41,7 +78,14 @@ class RegisterPage extends React.Component {
                                 <span className="login100-form-title p-b-32">
                                     Account Register
                                 </span>
-
+                                <span className="txt1 p-b-11">
+                                    Your name
+                                </span>
+                                <div className="wrap-input100 validate-input m-b-36" data-validate = "Username is required">
+                                    <input onChange={ this.handleChangeInutField } className="input100" type="text" 
+                                    name="name" />
+                                    <span className="focus-input100"></span>
+                                </div>
                                 <span className="txt1 p-b-11">
                                     Your email
                                 </span>

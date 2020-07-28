@@ -1,13 +1,23 @@
 import React, { Fragment } from 'react';
+import ListMessage from './ListMessage';
 
 class MainBody extends React.Component{
     render() {
-        return (
+        var renderListMSG = "";
+        console.log(this.props.listMessage)
+        if( this.props.listMessage.length > 0 ) {
+            renderListMSG = <ListMessage 
+            currentUserID = { this.props.currentUserID }
+            currentPeerUserid = { this.props.currentPeerUser.id }
+            listMessage={ this.props.listMessage } />
+        }
+        return this.props.currentPeerUser ? 
+        (
             <Fragment>
                 <div className="mainbd-head">
                     <img src="./avt.jpg" alt="" />
                     <div className="mainbd-h-inf">
-                        <h4>Hữu Văn</h4>
+                        <h4>{ this.props.currentPeerUser !== null ? this.props.currentPeerUser.name : "" }</h4>
                         <p>Đang online<span id="onlCir"></span></p>
                     </div>
                     <div className="mainbd-h-opt">
@@ -15,82 +25,15 @@ class MainBody extends React.Component{
                             <label>Tìm tin nhắn</label> 
                             <input type="text" name="searchMess" placeholder="Nhập tin cần tìm..."/>
                         </div>
-                        <div className="div2"><i className="fas fa-plus"></i></div>
-                        <div className="div3"><i className="fas fa-ellipsis-h"></i></div>
+                        <div onClick= { this.props.onTest } className="div2"><i className="fas fa-plus"></i></div>
+                        <div onClick={ this.props.onLogOut } className="div3"><i className="fas fa-ellipsis-h"></i></div>
                     </div>
                 </div>
                 <div className="wrapMessbdWrap">
                     <div className="scrollbar wrapMessbd scrollbar-juicy-peach mx-auto ">
                         <div className="mainbd-body">
-
-
-
-
-                        <div className = "sayHi-msg">
-                            <img src="./sayHi.gif" alt=""/>
-                            Vẫy tay chào nào!
-                        </div>
-                        <div className="msg-dpl">
-                            <img src="./avt.jpg" alt=""/>
-                            <div>
-                            <span>sssssssssss</span>
-                            <p className="t-msg">16:10</p>
-                            </div>
-                        </div>
-
-                        <div className="msg-dpl-r">
-                            <div>
-                            <span>ssssssadssssssssssssssssssss sssssssssss</span>
-                            <p className="t-msg">16:10</p>
-                            </div>
-                            <img src="./avt.jpg" alt=""/>
-                        </div>
-                        <div className="msg-dpl-r">
-                            <div>
-                            <span>ssssssadssssssssssssssssssss sssssssssss</span>
-                            <p className="t-msg">16:10</p>
-                            </div>
-                            <img src="./avt.jpg" alt=""/>
-                        </div>
-                        <div className="msg-dpl-r">
-                            <div>
-                            <span>ssssssadssssssssssssssssssss sssssssssss</span>
-                            <p className="t-msg">16:10</p>
-                            </div>
-                            <img src="./avt.jpg" alt=""/>
-                        </div>
-                        <div className="msg-dpl-r">
-                            <div>
-                            <span>ssssssadssssssssssssssssssss sssssssssss</span>
-                            <p className="t-msg">16:10</p>
-                            </div>
-                            <img src="./avt.jpg" alt=""/>
-                        </div>
-                        <div className="msg-dpl">
-                            <img src="./avt.jpg" alt=""/>
-                            <div>
-                            <span>sssssssssss</span>
-                            <p className="t-msg">16:10</p>
-                            </div>
-                        </div>
-                        <div className="msg-dpl">
-                            <img src="./avt.jpg" alt=""/>
-                            <div>
-                            <span>sssssssssss</span>
-                            <p className="t-msg">16:10</p>
-                            </div>
-                        </div>
-                        <div className="msg-dpl">
-                            <img src="./avt.jpg" alt=""/>
-                            <div>
-                            <span>sssssssssss</span>
-                            <p className="t-msg">16:10</p>
-                            </div>
-                        </div>  
-
-
-
-
+                           
+                            { renderListMSG }
 
                         </div>
                     </div>
@@ -98,12 +41,13 @@ class MainBody extends React.Component{
 
                 <div className="mainbd-ft">
                     <div className="mainbd-ft-bd">
-                        <div className="ic-sugg-mainbd">
+                        <div onClick = { () => { this.props.onOpenListSticker() } } className="ic-sugg-mainbd">
                             <i className="far fa-smile"></i>
                         </div>
                         <div className="bd-field-mainbd">
-                            <input type="text" name="messageInputField" placeholder="Nhập tin nhắn..."/>
-                            <div className="divi">
+                            <input value={ this.props.inpuValue } type="text" onChange = { (e) => { this.props.onChangeInputValue(e.target.value) } } 
+                            name="messageInputField" placeholder="Nhập tin nhắn..."/>
+                            <div onClick = { () => { this.props.onSendMessage() }} className="divi">
                             <i className="fas fa-paper-plane"></i>
                             </div>
                         </div>
@@ -111,6 +55,8 @@ class MainBody extends React.Component{
                 </div>
             </Fragment>
         )
+        :
+        (<div>Khong co du lieu</div>)
     }
 }
 export default MainBody;

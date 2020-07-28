@@ -1,6 +1,9 @@
 import React, { Fragment } from 'react';
 import '../App.css';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
+import LoginString from './../Lib/LoginString';
+import { toast } from 'react-toastify';
+import firebase from './../Services/Firebase';
 
 class LoginPage extends React.Component {
     constructor(props){
@@ -11,9 +14,10 @@ class LoginPage extends React.Component {
             password: "",
             name:"",
             error: null,
+            loading: true,
         };
+        this.onHandleSubmitF = this.onHandleSubmitF.bind(this)
         this.handleChangeInutField = this.handleChangeInutField.bind(this);
-        this.onHandleSubmitF = this.onHandleSubmitF.bind(this);
         this.onShowPW = this.onShowPW.bind(this);
     }
     onShowPW() {
@@ -26,14 +30,60 @@ class LoginPage extends React.Component {
             [event.target.name] : [event.target.value],
         });
     }
-    async onHandleSubmitF (event) {
+    componentDidMount(){
+        if( localStorage.getItem(LoginString.ID) ) {
+            this.setState({loading: false},() => {
+                this.setState({loading: false});
+                this.props.history.push("/dashboard");
+            })
+        }
+        else {
+            this.setState({
+                loading: false
+            })
+        }
+    }
+    async onHandleSubmitF(event) {
+        var { email,password } = this.state;
         event.preventDefault();
-        const {password,email,name} = this.state;
-        console.log("email",this.state.email);
-    } 
+        try {
+            this.setState({error:""});
+            await firebase.auth().signInWithEmailAndPassword(email.toString(), password.toString())
+            .then( async (result) => {
+                let user = result.user;
+                if( user ) {
+                    await firebase.firestore().collection("users")
+                    .where("id", "==", user.uid).get()
+                    .then((querySnapShot) => {
+                        querySnapShot.forEach((doc) => {
+                            const currentData = doc.data();
+                            localStorage.setItem(LoginString.firebaseDocumentID, doc.id);
+                            localStorage.setItem(LoginString.ID, currentData.id);
+                            localStorage.setItem(LoginString.name, currentData.name);
+                            localStorage.setItem(LoginString.email, currentData.email);
+                            localStorage.setItem(LoginString.message,currentData.message)
+                        })
+                        this.props.history.push("/dashboard");
+                    })
+                }
+            })
+            .catch((error) => {
+                window.alert( error);
+            })
+        }
+        catch(error) {
+            console.log("Error before login",error);
+        }
+    }
     render(){
-        return(
-            <Fragment>
+        return this.state.loading === true ? 
+        (
+            <div className="spinner-border text-success" role="status">
+              <span className="sr-only text-center">Loading...</span>
+            </div>
+        )
+        :
+        ( <Fragment>
                 <div className="limiter">
                     <div className="container-login100">
                         <div className="wrap-login100 p-l-85 p-r-85 p-t-55 p-b-55">

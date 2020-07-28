@@ -200,6 +200,7 @@ Nav menu
 }
 .messageFilter .drop-content {
   position: absolute;
+  color: black;
   background-color: white;
   display: none;
   left: 50px;
@@ -214,10 +215,6 @@ Nav menu
   background-color: #f1f1f1;
   
 }
-.messageFilter .drop-title:hover .drop-content {
-  display: block;
-  color: black;
-}
 .messageFilter .drop-title:hover {
   color: #0079FF;
 }
@@ -227,7 +224,10 @@ Nav menu
   grid-template-columns: 17% 83%;
   cursor: pointer;
 }
-.message-list .list .messageCard:hover {
+.message-list .chatUserActive .messageCard:hover {
+  background-color: rgb(222, 224, 230) !important;
+}
+.message-list .list > .messageCard:hover {
   background-color: rgb(245, 244, 244);
 }
 .message-list .list .messageCard > div {
@@ -335,6 +335,9 @@ Nav menu
   -ms-user-select: text; /* IE 10+ and Edge */
   user-select: text; /* Standard syntax */
   font-family: "Lucida Console", Monaco, monospace;
+}
+.chatUserActive {
+  background-color: rgb(222, 224, 230);
 }
 .container-wrap .bodyMessage > .mainbd-ft {
   height: 10%;

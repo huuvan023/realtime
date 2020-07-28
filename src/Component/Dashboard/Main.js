@@ -3,10 +3,46 @@ import PanelGroup from "react-panelgroup";
 import Content from "react-panelgroup";
 import { MDBContainer } from "mdbreact";
 import MainBody from './MainBody';
+import ListUser from './ListUser';
 
 class Main extends React.Component{
+    constructor(props){
+        super(props);
+        this.state = {
+            checkClickUserID: null,
+            onOpenDropTitle: false
+        }
+    }
+    onShowListUsers = (listUser) => {
+        var result = listUser.map((item, index) => {
+            let classname = "";
+            if( item.id ===  this.state.checkClickUserID ) {
+                classname = "list chatUserActive";
+            }
+            else {
+                classname =" list"
+            }
+            return <ListUser onsetCurrentPeer = { (item) => { this.props.onsetCurrentPeer(item) } } 
+                onSetActivePeerUser = { this.onSetActivePeerUser }            
+                className = { classname }
+                key= {index}
+                item = { item }
+            />
+        })
+        return result;
+    }
+    onSetActivePeerUser = (id) => {
+        this.setState({
+            checkClickUserID: id
+        })
+    }
     render(){
+            var dropStyle = "";
+            if( this.state.onOpenDropTitle ) {
+                dropStyle = "block";
+            }
         return(
+            
             <Fragment>
                 <PanelGroup direction="row" 
                     panelWidths={[
@@ -16,10 +52,10 @@ class Main extends React.Component{
                     <div className="chatList">
                     <div className="header">
                         <div className="usrName">
-                            Chat - Gió Biển
+                            Chat - { this.props.currentUserName }
                         </div>
                         <div className="search">
-                            <input type="text" placeholder="Tìm..."/>
+                            <input onChange={ (e) => { this.props.onFilterUser(e.target.value) } } type="text" placeholder="Tìm..."/>
                             <div className="i"><i className="fas fa-user-plus"></i></div>
                             <div className="i"><i className="fas fa-plus"></i></div>
                         </div>
@@ -27,9 +63,9 @@ class Main extends React.Component{
                     <div className="body">
                         <div className="message-list">
                             <div className="messageFilter">
-                                <div className="drop-title">
+                                <div onClick={ () => { this.setState({ onOpenDropTitle: !this.state.onOpenDropTitle }) } } className="drop-title">
                                     Tin nhắn <i className="fas fa-caret-down"></i>
-                                    <div className="drop-content">
+                                    <div style = {{ "display": dropStyle }}className="drop-content">
                                         <div>Tất cả tin nhắn</div>
                                         <div>Tin nhắn chưa đọc</div>
                                     </div>
@@ -37,186 +73,10 @@ class Main extends React.Component{
                             </div>
                             <MDBContainer>
                                 <div className="scrollbar scrollbar-juicy-peach mx-auto wrapAllMSG">
-                                <div className="list">
-                                        <div className="messageCard">
-                                            <div>
-                                                <img src="./avt.jpg" alt="" />
-                                            </div>
-                                            <div className="mess-summary">
-                                                <div className="head-summary">
-                                                    <span className="summ-n">Hữu Văn</span>
-                                                    <span className="summ-t">hôm qua</span>
-                                                </div>
-                                                <div className="body-summary">
-                                                    <p className="summ-mess-bd">
-                                                        { this.props.stringMess.slice(0, 25) }...
-                                                    </p>
-                                                    <span  className="summ-mess-more">
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                </div>
-                                <div className="list">
-                                        <div className="messageCard">
-                                            <div>
-                                                <img src="./avt.jpg" alt="" />
-                                            </div>
-                                            <div className="mess-summary">
-                                                <div className="head-summary">
-                                                    <span className="summ-n">Hữu Văn</span>
-                                                    <span className="summ-t">hôm qua</span>
-                                                </div>
-                                                <div className="body-summary">
-                                                    <p className="summ-mess-bd">
-                                                        { this.props.stringMess.slice(0, 25) }...
-                                                    </p>
-                                                    <span  className="summ-mess-more">
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                </div>
-                                <div className="list">
-                                        <div className="messageCard">
-                                            <div>
-                                                <img src="./avt.jpg" alt="" />
-                                            </div>
-                                            <div className="mess-summary">
-                                                <div className="head-summary">
-                                                    <span className="summ-n">Hữu Văn</span>
-                                                    <span className="summ-t">hôm qua</span>
-                                                </div>
-                                                <div className="body-summary">
-                                                    <p className="summ-mess-bd">
-                                                        { this.props.stringMess.slice(0, 25) }...
-                                                    </p>
-                                                    <span  className="summ-mess-more">
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                </div>
-                                <div className="list">
-                                        <div className="messageCard">
-                                            <div>
-                                                <img src="./avt.jpg" alt="" />
-                                            </div>
-                                            <div className="mess-summary">
-                                                <div className="head-summary">
-                                                    <span className="summ-n">Hữu Văn</span>
-                                                    <span className="summ-t">hôm qua</span>
-                                                </div>
-                                                <div className="body-summary">
-                                                    <p className="summ-mess-bd">
-                                                        { this.props.stringMess.slice(0, 25) }...
-                                                    </p>
-                                                    <span  className="summ-mess-more">
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                </div>
-                                <div className="list">
-                                        <div className="messageCard">
-                                            <div>
-                                                <img src="./avt.jpg" alt="" />
-                                            </div>
-                                            <div className="mess-summary">
-                                                <div className="head-summary">
-                                                    <span className="summ-n">Hữu Văn</span>
-                                                    <span className="summ-t">hôm qua</span>
-                                                </div>
-                                                <div className="body-summary">
-                                                    <p className="summ-mess-bd">
-                                                        { this.props.stringMess.slice(0, 25) }...
-                                                    </p>
-                                                    <span  className="summ-mess-more">
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                </div>
-                                <div className="list">
-                                        <div className="messageCard">
-                                            <div>
-                                                <img src="./avt.jpg" alt="" />
-                                            </div>
-                                            <div className="mess-summary">
-                                                <div className="head-summary">
-                                                    <span className="summ-n">Hữu Văn</span>
-                                                    <span className="summ-t">hôm qua</span>
-                                                </div>
-                                                <div className="body-summary">
-                                                    <p className="summ-mess-bd">
-                                                        { this.props.stringMess.slice(0, 25) }...
-                                                    </p>
-                                                    <span  className="summ-mess-more">
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                </div>
-                                <div className="list">
-                                        <div className="messageCard">
-                                            <div>
-                                                <img src="./avt.jpg" alt="" />
-                                            </div>
-                                            <div className="mess-summary">
-                                                <div className="head-summary">
-                                                    <span className="summ-n">Hữu Văn</span>
-                                                    <span className="summ-t">hôm qua</span>
-                                                </div>
-                                                <div className="body-summary">
-                                                    <p className="summ-mess-bd">
-                                                        { this.props.stringMess.slice(0, 25) }...
-                                                    </p>
-                                                    <span  className="summ-mess-more">
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                </div>
-                                <div className="list">
-                                        <div className="messageCard">
-                                            <div>
-                                                <img src="./avt.jpg" alt="" />
-                                            </div>
-                                            <div className="mess-summary">
-                                                <div className="head-summary">
-                                                    <span className="summ-n">Hữu Văn</span>
-                                                    <span className="summ-t">hôm qua</span>
-                                                </div>
-                                                <div className="body-summary">
-                                                    <p className="summ-mess-bd">
-                                                        { this.props.stringMess.slice(0, 25) }...
-                                                    </p>
-                                                    <span  className="summ-mess-more">
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                </div>
-                                <div className="list">
-                                        <div className="messageCard">
-                                            <div>
-                                                <img src="./avt.jpg" alt="" />
-                                            </div>
-                                            <div className="mess-summary">
-                                                <div className="head-summary">
-                                                    <span className="summ-n">Hữu Văn</span>
-                                                    <span className="summ-t">hôm qua</span>
-                                                </div>
-                                                <div className="body-summary">
-                                                    <p className="summ-mess-bd">
-                                                        { this.props.stringMess.slice(0, 25) }...
-                                                    </p>
-                                                    <span  className="summ-mess-more">
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                </div>
+                                    
+                                { this.props.viewUsers ? this.onShowListUsers(this.props.viewUsers) : "" }
+ 
+ 
                                 <p id="watch-mr">Xem thêm...</p>
                                 </div>
                             </MDBContainer>
@@ -259,7 +119,17 @@ class Main extends React.Component{
                 
                 <Content>
                 <main className="bodyMessage">
-                    <MainBody/>
+                    <MainBody currentUserName = { this.props.currentUserName } 
+                    currentPeerUser = { this.props.currentPeerUser }
+                    onLogOut = { this.props.onLogOut } 
+                    currentUserID = { this.props.currentUserID }
+                    onOpenListSticker = { this.props.onOpenListSticker }
+                    onSendMessage = { this.props.onSendMessage }
+                    onChangeInputValue = { this.props.onChangeInputValue }
+                    inpuValue = { this.props.inpuValue }
+                    listMessage = { this.props.listMessage }
+                    onTest = { this.props.onTest }
+                    history={ this.props.history }/>
                 </main>
                 </Content>
                 
