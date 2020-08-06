@@ -1,20 +1,25 @@
 import React, { Fragment } from 'react';
 import '../App.css';
-import { TextField } from '@material-ui/core'
-import { Link, Redirect } from 'react-router-dom';
+import { connect } from 'react-redux';
+import PositionSnackbar from './../Component/Login/PositionSnackbar';
+import { loadingLogin } from './../Component/Login/LoadingLogin'
 import LoginString from './../Lib/LoginString';
-import { toast } from 'react-toastify';
-import firebase from './../Services/Firebase';
+import { checkUserLogins } from './../Lib/Dispatch';
+import swal from 'sweetalert';
+import Login from '../Component/Login/Login';
+
 
 class LoginPage extends React.Component {
     constructor(props){
         super(props);
         this.state = {
             showPW: false,
+            error: "",
             email: "",
             password: "",
+            remember: true,
             name:"",
-            error: null,
+            loginLoading: false,
             loading: true,
         };
         this.onHandleSubmitF = this.onHandleSubmitF.bind(this)
@@ -27,15 +32,30 @@ class LoginPage extends React.Component {
         });
     }
     handleChangeInutField (event) {
-        this.setState({
-            [event.target.name] : [event.target.value],
-        });
+       if( event.target.name === "remember" ) {
+            this.setState({
+                remember: !this.state.remember
+            })
+       }
+       else {
+            this.setState({
+                [event.target.name] : [event.target.value],
+            });
+       }
     }
     componentDidMount(){
         if( localStorage.getItem(LoginString.ID) ) {
             this.setState({loading: false},() => {
-                this.setState({loading: false});
-                this.props.history.push("/dashboard");
+                swal({
+                    title: "Success",
+                    text: "Login successfully!",
+                    icon: "success",
+                    timer: 2000,
+                    buttons: false,
+                })
+                .then( a => {
+                    this.props.history.push("/dashboard")
+                })
             })
         }
         else {
@@ -45,98 +65,71 @@ class LoginPage extends React.Component {
         }
     }
     async onHandleSubmitF(event) {
-        var { email,password } = this.state;
+        var { email,password,remember } = this.state;
         event.preventDefault();
+        this.setState({
+            loginLoading: true,
+            error: "",
+        })
+
         try {
-            this.setState({error:""});
-            await firebase.auth().signInWithEmailAndPassword(email.toString(), password.toString())
-            .then( async (result) => {
-                let user = result.user;
-                if( user ) {
-                    await firebase.firestore().collection("users")
-                    .where("id", "==", user.uid).get()
-                    .then((querySnapShot) => {
-                        querySnapShot.forEach((doc) => {
-                            const currentData = doc.data();
-                            localStorage.setItem(LoginString.firebaseDocumentID, doc.id);
-                            localStorage.setItem(LoginString.ID, currentData.id);
-                            localStorage.setItem(LoginString.name, currentData.name);
-                            localStorage.setItem(LoginString.email, currentData.email);
-                            localStorage.setItem(LoginString.message,currentData.message)
-                        })
-                        this.props.history.push("/dashboard");
-                    })
-                }
+            await this.props.checkUserLogin(email,password,remember);
+            this.setState({
+                loginLoading: false,
             })
-            .catch((error) => {
-                window.alert( error);
-            })
+            if( this.props.userData.checkLogin === true ) {
+                await swal({
+                    title: "Success",
+                    text: "Login successfully!",
+                    icon: "success",
+                    timer: 2000,
+                    buttons: false,
+                })
+                .then( a => {
+                    this.props.history.push("/dashboard")
+                })
+                
+                
+            }
+            else if( this.props.userData.error !== "" ) {
+                this.setState({
+                    error: this.props.userData.error
+                });
+            }
         }
         catch(error) {
-            console.log("Error before login",error);
+            alert("Error: ",error)
         }
     }
+    
     render(){
-        return this.state.loading === true ? 
-        (
-            <div className="spinner-border text-success" role="status">
-              <span className="sr-only text-center">Loading...</span>
-            </div>
-        )
-        :
-        ( <Fragment>
-                <div className="limiter">
-                    <div className="container-login100">
-                        <div className="wrap-login100 p-l-85 p-r-85 p-t-55 p-b-55">
-                            <form onSubmit={ this.onHandleSubmitF } className="login100-form validate-form flex-sb flex-w">
-                                <span className="login100-form-title p-b-32">
-                                    Account Login
-                                </span>
-
-                                <span className="txt1 p-b-11">
-                                    Your Email
-                                </span>
-                                <div className="wrap-input100 validate-input m-b-36" data-validate = "Username is required">
-                                    <input onChange={ this.handleChangeInutField } className="input100" type="text" name="email" />
-                                    <span className="focus-input100"></span>
-                                </div>
-                                
-                                <span className="txt1 p-b-11">
-                                    Password
-                                </span>
-                                <div className="wrap-input100 validate-input m-b-12" data-validate = "Password is required">
-                                    <span onClick={ this.onShowPW } className="btn-show-pass">
-                                        <i className="fa fa-eye"></i>
-                                    </span>
-                                    <input onChange={ this.handleChangeInutField } className="input100" type={ this.state.showPW ? "text" : "password" } name="password" />
-                                    <span className="focus-input100"></span>
-                                </div>
-                                
-                                <div className="flex-sb-m w-full p-b-5">
-                                    <div className="contact100-form-checkbox">
-                                        <input className="input-checkbox100" id="ckb1" type="checkbox" name="remember-me"/>
-                                        <label className="label-checkbox100" htmlFor="ckb1">
-                                            Remember me
-                                        </label>
-                                    </div>
-                                    <div>
-                                        <Link to="/forgetpassword" className="txt3">
-                                            Forgot Password?
-                                        </Link>
-                                    </div>
-                                </div>
-                                <p className="p-b-40">You don't have account? <Link to="/register">Register now!</Link></p>
-                                <div className="container-login100-form-btn">
-                                    <button className="login100-form-btn">
-                                        Login
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
+        return this.state.loading === true ? ( loadingLogin() ) :
+        ( 
+        <Fragment>
+                { this.state.loginLoading === true ? loadingLogin() : "" }
+                { this.state.error !== "" ? <PositionSnackbar error = { this.state.error } /> : "" }
+                
+                <Login 
+                remember = { this.state.remember }
+                handleChangeInutField = { this.handleChangeInutField }
+                onShowPW = { this.onShowPW }
+                showPW = { this.state.showPW }
+                onHandleSubmitF = { this.onHandleSubmitF }
+                />
             </Fragment>
         );
     }
 }
-export default LoginPage;
+const mapStateToProps = (state) => {
+    return {
+        userData: state.user
+    }
+}
+const mapDispatchToProps = ( dispatch, props ) => {
+    return {
+        checkUserLogin: async (email,password,remember) =>{
+            await dispatch( checkUserLogins(email,password,remember) )
+        }
+    }
+}
+export default connect(mapStateToProps,mapDispatchToProps)(LoginPage);

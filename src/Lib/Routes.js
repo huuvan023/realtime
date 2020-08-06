@@ -34,7 +34,7 @@ const routes = [
     {
         path: "/forgetpassword",
         exact: false,
-        main: () => <ForgetPWPage/>
+        main: ({history}) => <ForgetPWPage history={ history }/>
     },
     {
         path: "/register",

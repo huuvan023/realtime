@@ -5,23 +5,38 @@ import MainResponsive from './../Component/Dashboard/MainResponsive';
 import ResponsiveNav from './../Component/Dashboard/ResponsiveNav';
 import firebase from './../Services/Firebase';
 import LoginString from './../Lib/LoginString';
+import { connect } from 'react-redux';
+import { fetchUser } from '../Lib/Dispatch';
+import { loadingDashboard } from './../Component/Dashboard/LoadingDashboard';
+import { fetchAllUserTab } from './../Lib/Dispatch';
 
 class IndexPage extends React.Component {
     constructor(props) {
         super(props); 
         this.state={
-            stringMess:"ZaloPay - Ứng dụng thanh toán di động, chuyển-nhận tiền nhanh, an toàn theo tiêu Chuẩn Quốc Tế PCI-DSS.",
+            listUsers: [],
+            dataUser: null,
+
+
+
+
+            status:"message",
             toggleMiniMenu: false,
             loading: true,
             openDialogLogout: false,
             currentPeerUser: null,
             displayContactSwitchedNotification:[],
             listUserWillDisplay:[],
+            
             viewUsers: null,
             keyWordFilter: "",
             isShowSticker: true,
             inpuValue:"",
             listMessage : [],
+            image: {
+                file: null,
+                imagePreviewUrl: null,
+            },
         }
         this.currentUserName = localStorage.getItem(LoginString.name);
         this.currentUserID = localStorage.getItem(LoginString.ID);
@@ -44,28 +59,28 @@ class IndexPage extends React.Component {
             });
         }
     }
-    componentDidMount() {
+    async componentDidMount() {
+         
         if( window.innerWidth >= 0 && window.innerWidth <= 450 ){
             this.setState({
                 toggleMiniMenu: true,
             });
         }
         window.addEventListener("resize",this.toggleMiniMenu);
-        firebase.firestore().collection('users').doc(this.currentUserDocumentID).get()
-        .then((doc) => {
-            doc.data().message.map((item) => {
-                this.currentUserMessage.push({
-                    notificationId: item.notificationId,
-                    number: item.number
-                });
-            });
-            this.setState({
-                displayContactSwitchedNotification : this.currentUserMessage,
-            });
+        await this.props.onFetchUser(this.props.dataUser);
+       
+        await this.setState({
+            listUsers: this.props.dataUser.listUsers.data,
+            dataUser: this.props.dataUser.userData,
+            loading: false,
         })
-        this.getListUser();
+        //console.log(this.state.listUsers)
+        await this.props.onFetchAllUserTab( this.state.listUsers, this.props.dataUser );
+        //this.getListUser();
     }
-    getListUser = async () => {
+  
+    /*getListUser = async () => {
+        
         const result = await firebase.firestore().collection('users').get();
         if( result.docs.length > 0 ) {
             let listUser = [];
@@ -103,34 +118,9 @@ class IndexPage extends React.Component {
             })
             
         }
-    }
-    /*
-    onRenderClassNameUserNotification = ( itemID ) => {
-        let number = 0;
-        let classname = "";
-        let check = false;
-        if( this.state.currentPeerUser && this.state.currentPeerUser.id === itemID ) {
-            classname = "chatUserActive";
-        }
-        else {
-            this.state.displayContactSwitchedNotification.forEach((item) => {
-                if( item.notificationId.length > 0 ) {
-                    if( item.notificationId === itemID ) {
-                        check = true;
-                        number = item.number;
-                    }
-                }
-            })
-            if( check === true ) {
-                classname="viewWrapItemNotification";
-            }
-            else {
-                classname="";
-            }
-        }
-        return classname;
-    }
-    */
+    }*/
+    
+    
     toggleMiniMenu = () => {
         if( window.innerWidth >= 0 && window.innerWidth <= 450 ){
             this.setState({
@@ -143,6 +133,7 @@ class IndexPage extends React.Component {
             });
         }
     }
+
     onsetCurrentPeer = async (item) => {
         if( this.state.currentPeerUser === null || this.state.currentPeerUser !== item ) {
             let docID = null;
@@ -165,6 +156,7 @@ class IndexPage extends React.Component {
             if( this.currentUserID && this.state.currentPeerUser ) {
                 this.groupChatID = Math.abs(this.hashString(this.currentUserID) - this.hashString(this.state.currentPeerUser.id) ).toString();
             }
+
             let listMSGArr = [];
             await firebase.firestore()
             .collection("Message")
@@ -186,68 +178,111 @@ class IndexPage extends React.Component {
         });
     }
     onSendMessage = async ( content,type ) => {
-        //type 0 text, 1 images, 0 sticker
-        if( content.trim() === "" ) {
-            return 
-        }
-        if( this.currentUserID && this.state.currentPeerUser ) {
-            this.groupChatID = Math.abs(this.hashString(this.currentUserID) - this.hashString(this.state.currentPeerUser.id) ).toString();
-        }
-        const time = new Date();
-        var timestamp = time.toISOString()
-        const itemMessage = {
-            idFrom: this.currentUserID,
-            idTo: this.state.currentPeerUser.id,
-            timestamp: timestamp,
-            content: content.trim(),
-            type: type
-        }
-        await firebase.firestore()
-        .collection("Message")
-        .doc(this.groupChatID)
-        .collection(this.groupChatID)
-        .doc(timestamp)
-        .set(itemMessage)
-        .then(() => {
-            this.setState({
-                inpuValue:"",
-            });
-        });
-        let listMSGArr = [];
-        await firebase.firestore()
-        .collection("Message")
-        .doc(this.groupChatID)
-        .collection(this.groupChatID)
-        .onSnapshot((Snapshot) => {
-            Snapshot.docChanges().forEach((changed) => {
-                console.log("vo dc snapshot")
-                    listMSGArr.push(changed.doc.data());
-            })
-            this.setState({
-                listMessage: listMSGArr
-            });
-        })
-        
-        
-        /*
-        this.currentPeerUserMessage.map((item) => {
-            if( item.notificationId !== this.currentUserID ) {
-                notificationMessages.push({
-                    notificationId: item.notificationId,
-                    number: item.number,
-                });
+        //type 0 text, 1 images, 2 sticker
+        if( type !== 1 ) {
+            if( content.trim() === "" ) {
+                return 
             }
-        })
-        firebase.firestore()
-        .collection("users")
-        .doc(this.state.currentPeerUser.docID)
-        .update({
-            message: notificationMessages
-        })
-        .then((data) => {})
-        .catch((error) => {
-            window.alert(error);
-        })*/
+            if( this.currentUserID && this.state.currentPeerUser ) {
+                this.groupChatID = Math.abs(this.hashString(this.currentUserID) - this.hashString(this.state.currentPeerUser.id) ).toString();
+            }
+            let today = new Date();
+            let date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+            let time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+            let timestamp = date+' '+time;
+
+            const itemMessage = {
+                idFrom: this.currentUserID,
+                idTo: this.state.currentPeerUser.id,
+                timestamp: timestamp,
+                content: content.trim(),
+                type: type
+            }
+            await firebase.firestore()
+            .collection("Message")
+            .doc(this.groupChatID)
+            .set({
+                lastModified: timestamp
+            })
+            .then(() => {  })
+            .catch( error => alert(error) )
+
+            await firebase.firestore()
+            .collection("Message")
+            .doc(this.groupChatID)
+            .collection(this.groupChatID)
+            .doc(timestamp)
+            .set(itemMessage)
+            .then(() => {
+                this.setState({
+                    inpuValue:"",
+                });
+            });
+            let listMSGArr = [];
+            await firebase.firestore()
+            .collection("Message")
+            .doc(this.groupChatID)
+            .collection(this.groupChatID)
+            .onSnapshot((Snapshot) => {
+                Snapshot.docChanges().forEach((changed) => {
+                        listMSGArr.push(changed.doc.data());
+                })
+                this.setState({
+                    listMessage: listMSGArr
+                });
+            })
+        }
+        else {
+            
+            let ref = firebase.storage().ref();
+            let file = content;
+            let metadata = {
+                contentTYpe: file.type,
+            }
+            const task = ref.child(file.name).put(file,metadata);
+            task.then( snapshot => snapshot.ref.getDownloadURL() )
+            .then( async url => {
+                if( this.currentUserID && this.state.currentPeerUser ) {
+                    this.groupChatID = Math.abs(this.hashString(this.currentUserID) - this.hashString(this.state.currentPeerUser.id) ).toString();
+                }
+                let today = new Date();
+                let date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+                let time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+                let timestamp = date+' '+time;
+                const itemMessage = {
+                    idFrom: this.currentUserID,
+                    idTo: this.state.currentPeerUser.id,
+                    timestamp: timestamp,
+                    content: url,
+                    type: type,
+                    seen: false,
+                }
+                    await firebase.firestore()
+                    .collection("Message")
+                    .doc(this.groupChatID)
+                    .collection(this.groupChatID)
+                    .doc(timestamp)
+                    .set(itemMessage)
+                    .then(() => {
+                    });
+
+                    let listMSGArr = [];
+                    await firebase.firestore()
+                    .collection("Message")
+                    .doc(this.groupChatID)
+                    .collection(this.groupChatID)
+                    .onSnapshot((Snapshot) => {
+                        Snapshot.docChanges().forEach((changed) => {
+                                listMSGArr.push(changed.doc.data());
+                        })
+                        this.setState({
+                            listMessage: listMSGArr
+                        });
+                    })
+            })
+        }
+        
+  
     }
     onKeyboardPress = (event) => {
        
@@ -259,37 +294,13 @@ class IndexPage extends React.Component {
             inpuValue: value
         })
     }
+    onSendSticker = (a,b) => {
+        this.onSendMessage(a.src,b);
+    }
     onSendMessageClick = () => {
         this.onSendMessage(this.state.inpuValue, 0);
     }
     onRenderListMessage = () => {
-        /*
-        if ( this.state.listMessage.length > 0 ) {
-            let viewListMessage = [];
-            this.listMessage.forEach((item,index) => {
-
-                if( item.idFrom === this.currentUserID ) {
-                    if( item.type === 0 ) {
-                        viewListMessage.push({
-                            sender: this.currentUserID,
-                            key: item.timestamp,
-                            content: item.content
-                        })
-                    }
-                }
-                else {
-                    if( item.type === 0 ) {
-                        viewListMessage.push({
-                            sender: this.state.currentPeerUser.id,
-                            key: item.timestamp,
-                            content: item.content
-                        })
-                    }
-                }
-
-            })
-            return viewListMessage;
-        }*/
         return ( <div>das</div> )
     }
     onLogOut = () => {
@@ -316,6 +327,9 @@ class IndexPage extends React.Component {
         })
         .catch((err) =>  { window.alert(err) })
     }
+    onUploadImage = (e) => {
+        this.onSendMessage(e,1);
+    }
     hashString = (string) => {
         let hash = 0;
         for ( let i = 0; i< string.length ; i++ ) {
@@ -324,25 +338,29 @@ class IndexPage extends React.Component {
         }
         return hash;
     }
-    onOpenListSticker = () => {
-        console.log("Show ticker!")
+    onSayHi = () => {
+        this.onSendMessage("sayHi.gif",2)
     }
-    render(){
-        //console.log(this.state.listMessage)
-        var viewUsers = this.state.viewUsers;
-        if( this.state.keyWordFilter !== "" ) {
-            viewUsers = viewUsers.filter((item) => {
-                let name = item.name.toString().toLowerCase();
-                return name.indexOf(this.state.keyWordFilter.toLowerCase()) >= 0;
-            });
+    render(){ 
+         
+        //filter username
+        var viewUsers = this.state.listUsers;
+        if( viewUsers.length > 0 ) {
+            if( this.state.keyWordFilter !== "" ) {
+                viewUsers = viewUsers.filter((item) => {
+                    let name = item.dataUser.name.toString().toLowerCase();
+                    return name.indexOf(this.state.keyWordFilter.toLowerCase()) >= 0;
+                });
+            }
         }
+
         var height = window.innerHeight;
         return this.state.loading === true ? 
-        (<div>Loading</div>)
+        ( loadingDashboard() )
         :
         ( <div style={{ "height": height*(99.9/100) }} className="container-wrap">
                 <nav  className="navMenu">
-                    <Nav history = { this.props.history } />
+                    <Nav history = { this.props.history } status = { this.state.status } onChangDPLStatus = { this.onChangDPLStatus } />
                     <ResponsiveNav/>
                 </nav>
                 { !this.state.toggleMiniMenu ?
@@ -351,38 +369,30 @@ class IndexPage extends React.Component {
                 onFilterUser = { this.onFilterUser } 
                 currentUserName = { this.currentUserName }
                 viewUsers = { viewUsers } 
-                onTest = { this.onTest }
                 height = { height }
+                dataUser = { this.state.dataUser !== null ? this.state.dataUser : "" }
+                status = { this.state.status }
+                onUploadImage = { this.onUploadImage }
                 currentUserID = { this.currentUserID }
+                onSayHi = { this.onSayHi }
                 onSendMessage = { this.onSendMessageClick }
-                onLogOut = { this.onLogOut } 
                 listMessage = { this.state.listMessage }
+                status = { this.state.status }
                 inpuValue = { this.state.inpuValue}
                 onRenderListMessage = { this.onRenderListMessage }
-                onOpenListSticker = { this.onOpenListSticker }
                 onChangeInputValue = { this.onChangeInputValue }
                 history = { this.props.history } 
+                onSendSticker = { this.onSendSticker }
                 stringMess = { this.state.stringMess } /> : <MainResponsive/> }
             </div>
         );
     }
+    onChangDPLStatus = (status) => {
+        this.setState({
+            status: status,
+        });
+    }
     onTest = () => {
-        //this.groupChatID = Math.abs( this.hashString(this.currentUserID) - this.hashString(this.state.currentPeerUser.id) )
-        /*console.log(parseInt(this.groupChatID))
-        firebase.firestore()
-        .collection("Message")
-        .doc("das")
-        .get()
-        .then((doc) => { 
-            if( doc.exists ) {
-                console.log("co xuat hien");
-            }
-            else {
-                console.log("Doc ko co")
-            }
-         }).catch(function(error) {
-            console.log("Error getting document:", error);
-        });*/
         this.groupChatID = Math.abs(this.hashString(this.currentUserID) - this.hashString(this.state.currentPeerUser.id) ).toString();
         firebase.firestore()
         .collection("Message")
@@ -397,4 +407,21 @@ class IndexPage extends React.Component {
         })
     }
 }
-export default IndexPage;
+
+const mapStateToProps = ( state ) => {
+    return {
+        dataUser: state.user,
+        messages: state.messages
+    }
+}
+const mapDispatchToProps = ( dispatch, props ) => {
+    return {
+        onFetchUser : async (user) => {
+            await dispatch( fetchUser(user) );
+        },
+        onFetchAllUserTab: async (listUsers,dataUser) => {
+            await dispatch(fetchAllUserTab( listUsers,dataUser ))
+        }
+    }
+}
+export default connect(mapStateToProps,mapDispatchToProps)(IndexPage);

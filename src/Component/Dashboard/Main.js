@@ -4,22 +4,31 @@ import Content from "react-panelgroup";
 import { MDBContainer } from "mdbreact";
 import MainBody from './MainBody';
 import ListUser from './ListUser';
+import ModalAddFiend from './ModalAddFriend';
+import { connect } from 'react-redux';
+import { fetchPeerMessage } from './../../Lib/Dispatch';
 
 class Main extends React.Component{
     constructor(props){
         super(props);
         this.state = {
             checkClickUserID: null,
-            onOpenDropTitle: false
+            onOpenDropTitle: false,
         }
         this.myref = React.createRef();
     }
-    onShowListUsers = (listUser) => {
-        var result = listUser.map((item, index) => {
+    
+
+    onShowListUsers =  (listUser) => {
+        
+        var result =  listUser.map(  (item, index) => {
             let classname = "";
+             
             if( this.state.checkClickUserID !== null){
-                if( item.id ===  this.state.checkClickUserID.id ) {
+               // console.log(item.dataUser.id , this.state.checkClickUserID.id )
+                if( item.dataUser.id ===  this.state.checkClickUserID ) {
                     classname = "list chatUserActive";
+                   
                 }
                 else {
                     classname =" list"
@@ -29,7 +38,11 @@ class Main extends React.Component{
                 classname =" list"
             }
         
-            return <ListUser onsetCurrentPeer = { (item) => { this.props.onsetCurrentPeer(item) } } 
+            return <ListUser 
+                listUsers = { this.props.viewUsers }
+                dataUser = { this.props.dataUser }
+                currentUserID = { this.props.currentUserID }
+                onsetCurrentPeer = { (item) => { this.props.onsetCurrentPeer(item) } } 
                 onSetActivePeerUser = { this.onSetActivePeerUser }            
                 className = { classname }
                 key= {index}
@@ -40,17 +53,32 @@ class Main extends React.Component{
     }
     onSetActivePeerUser = (id) => {
         this.setState({
-            checkClickUserID: id
+            checkClickUserID: id.dataUser.id
         })
     }
-    render(){
+    render(){   
+         
             var dropStyle = "";
             if( this.state.onOpenDropTitle ) {
                 dropStyle = "block";
             }
             var heightElement = 0;
-            if(  this.myref.current )
+            var heiBL = {
+                "height": "" 
+            }
+            if(  this.myref.current ) {
                 heightElement = this.myref.current.offsetHeight;
+                heiBL = {
+                    "height":  parseInt( this.props.height -heightElement)
+                }
+            }
+            let displayTab = "";
+            if( this.props.viewUsers && this.props.status == "message" ) {
+                displayTab = this.onShowListUsers(this.props.viewUsers);
+            }
+            if( this.props.viewUsers && this.props.status == "friends" ) {
+                displayTab = <div>asdad</div>;
+            }
         return(
             
             <Fragment>
@@ -60,20 +88,20 @@ class Main extends React.Component{
                       ]}>
                 <Content >
                     <div className="chatList">
-                    <div className="header" ref={ this.myref }>
+                    <div className="header" id="test" ref={ this.myref }>
                         <div className="usrName">
                             Chat - { this.props.currentUserName }
                         </div>
                         <div className="search">
                             <input onChange={ (e) => { this.props.onFilterUser(e.target.value) } } type="text" placeholder="Tìm..."/>
-                            <div className="i"><i className="fas fa-user-plus"></i></div>
-                            <div className="i"><i className="fas fa-plus"></i></div>
+                            <ModalAddFiend />
                         </div>
                     </div>
-                    <div className="body">
+                    <div  style={ heiBL } className="body">
                         <div className="message-list">
                             <div className="messageFilter">
-                                <div onClick={ () => { this.setState({ onOpenDropTitle: !this.state.onOpenDropTitle }) } } className="drop-title">
+                                <div style={ this.props.status === "friends" ? { "display":"none" } : { "display":"block" } }  
+                                onClick={ () => { this.setState({ onOpenDropTitle: !this.state.onOpenDropTitle }) } } className="drop-title">
                                     Tin nhắn <i className="fas fa-caret-down"></i>
                                     <div style = {{ "display": dropStyle }}className="drop-content">
                                         <div>Tất cả tin nhắn</div>
@@ -84,7 +112,7 @@ class Main extends React.Component{
                             <MDBContainer>
                                 <div className="scrollbar scrollbar-juicy-peach mx-auto wrapAllMSG">
                                     
-                                { this.props.viewUsers ? this.onShowListUsers(this.props.viewUsers) : "" }
+                                { displayTab }
  
  
                                 <p id="watch-mr">Xem thêm...</p>
@@ -131,16 +159,17 @@ class Main extends React.Component{
                 <main className="bodyMessage">
                     <MainBody currentUserName = { this.props.currentUserName } 
                     currentPeerUser = { this.props.currentPeerUser }
-                    onLogOut = { this.props.onLogOut } 
                     offSetHeight = { heightElement }
+                    onSayHi = { this.props.onSayHi }
                     height = { this.props.height }
                     currentUserID = { this.props.currentUserID }
                     onOpenListSticker = { this.props.onOpenListSticker }
                     onSendMessage = { this.props.onSendMessage }
+                    onUploadImage = { this.props.onUploadImage }
+                    onSendSticker = {  this.props.onSendSticker }
                     onChangeInputValue = { this.props.onChangeInputValue }
                     inpuValue = { this.props.inpuValue }
                     listMessage = { this.props.listMessage }
-                    onTest = { this.props.onTest }
                     history={ this.props.history }/>
                 </main>
                 </Content>
@@ -150,4 +179,21 @@ class Main extends React.Component{
         );
     }
 }
-export default Main;
+
+const mapStateToProps = (state) => {
+    return {
+        messages: state.messages
+    }
+}
+const mapDispatchToProps = ( dispatch, props ) => {
+    //console.log("vo dc dispatch1")
+    return {
+        onFetchPeerMessage: async (host,peer) => {
+            //console.log("vo dc dispatch 2")
+            await dispatch(fetchPeerMessage( host,peer ))
+        }
+    }
+}
+export default connect(mapStateToProps,mapDispatchToProps)(Main);
+
+ 

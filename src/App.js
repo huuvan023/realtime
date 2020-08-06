@@ -45,12 +45,6 @@ class App extends React.Component {
     }
   }
   render(){
-    /*
-    <Route path="/" exact={true}><LoginPage showToast = { this.showToast } /></Route>
-            <Route path="/dashboard" ><IndexPage/></Route>
-            <Route path="/register"><RegisterPage  history={this.props.history} /></Route>
-            <Route path="/forgetpassword"><ForgetPWPage/></Route>
-            <Route path=""><NotFoundPage/></Route>*/
     return false ? 
     (
       <div className="spinner-border text-success" role="status">

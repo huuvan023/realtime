@@ -9,6 +9,18 @@
   overflow: hidden;
 }
 
+.loading-fixed {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  z-index: 100000;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.185);
+}
 /*
 Nav menu
 */
@@ -49,13 +61,13 @@ Nav menu
   height: 80%;
 }
 .menuTab > .tabList > div:hover {
-  background-color: rgb(238, 238, 238);
+  background-color: rgb(194, 194, 194);
 }
 .menuTab .tabList-bottom > div:hover {
-  background-color: rgb(238, 238, 238);
+  background-color:rgb(194, 194, 194);
 }
 .menuTab-respon  .tabList > div:hover {
-  background-color: rgb(235, 238, 243);
+  background-color: rgb(194, 194, 194);
 }
 .navMenu .menuTab i{
   font-size: 25px;
@@ -135,6 +147,17 @@ Nav menu
 .menuITchild { 
   padding: 10px 20px !important;
 }
+.menuITchild  a{
+  font-size: inherit !important;
+  font-family: inherit !important;
+  padding: 0 !important;
+  margin: inherit !important;
+  color: inherit !important;
+}
+.menuITchild  a:hover {
+  text-decoration: none !important;
+  color: inherit !important;
+}
 .chatList {
   width: 400px;
   height: 100%;
@@ -156,7 +179,7 @@ Nav menu
 
 }
 .chatList .header .search .i{
-  width: 15%;
+  width: 20%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -171,7 +194,7 @@ Nav menu
   border-radius: 50px;
   font-size: 15px;
   outline: none;
-  width: 70%;
+  width: 80%;
   padding: 5px 15px 5px 15px;
   border: 0.5px solid rgb(177, 177, 177);
 }
@@ -231,24 +254,24 @@ Nav menu
 .messageFilter .drop-title:hover {
   color: #0079FF;
 }
-.message-list .list .messageCard {
+ .list .messageCard {
   padding: 5% 10px;
   display: grid;
   grid-template-columns: 17% 83%;
   cursor: pointer;
 }
-.message-list .chatUserActive .messageCard:hover {
+.chatUserActive .messageCard:hover {
   background-color: rgb(222, 224, 230) !important;
 }
-.message-list .list > .messageCard:hover {
+.list > .messageCard:hover {
   background-color: rgb(245, 244, 244);
 }
-.message-list .list .messageCard > div {
+.list .messageCard > div {
   display: flex;
   justify-content: center;
   align-items: center;
 }
-.message-list .list .messageCard img {
+.list .messageCard img {
   max-width: 100%;
   max-height: 100%;
   border-radius: 100%;
@@ -301,10 +324,54 @@ Nav menu
   display: flex;
   margin: 5px 0;
 }
+.mainbd-body .msg-dpl > div {
+  position: relative;
+}
+.mainbd-body .msg-dpl:hover .deleteMessage {
+  display: flex;
+}
+.mainbd-body .msg-dpl-r > div {
+  position: relative;
+}
+.mainbd-body .msg-dpl-r:hover .deleteMessage {
+  display: flex;
+}
+.deleteMessage i:hover{
+  color: #2c2c2c;
+}
+.mainbd-body .msg-dpl-r .deleteMessage {
+  right: 100%;
+}
+.mainbd-body .msg-dpl .deleteMessage {
+  left: 100%;
+}
+.deleteMessage {
+  height: 100% !important;
+  position: absolute;
+  display: none;
+  top:0;
+  cursor: pointer;
+  justify-content: center;
+  align-items: center;
+  border: none !important;
+  background-color: white !important;
+  color: #999999 !important;
+   
+}
 .bodyMessage  .mainbd-body .msg-dpl > img {
   width: 40px;
   height: 40px;
   border-radius: 100%;
+}
+.bodyMessage  .mainbd-body .msg-dpl > div > img,.bodyMessage  .mainbd-body .msg-dpl-r > div > img {
+  width: 100px;
+  height: 100px;
+  background-color: white;
+}
+.stickerMSG {
+  background-color: white !important;
+  border: none !important; 
+  margin-left: auto;
 }
 .bodyMessage  .mainbd-body .msg-dpl-r > img {
   width: 40px;
@@ -318,7 +385,7 @@ Nav menu
   max-width: 60%;
   border: 1px solid rgb(205, 205, 255)  ;
   border-radius: 10px;
-  background-color: #e2efff !important;
+  background-color: #e2efff ;
   font-family: "Lucida Console", Monaco, monospace;
   padding: 10px 20px;
   margin-right: auto;
@@ -328,12 +395,17 @@ Nav menu
   max-width: 60%;
   border: 1px solid rgb(205, 205, 255)  ;
   border-radius: 10px;
-  background-color: #e2efff !important;
+  background-color: #e2efff ;
   font-family: "Lucida Console", Monaco, monospace;
   padding: 10px 20px;
   margin-right: 10px;
   margin-left: auto;
 }
+
+.bodyMessage  .mainbd-body .msg-dpl div > img,.bodyMessage  .mainbd-body .msg-dpl-r div > img {
+  max-width: 100%;
+  max-height: 100%;
+ }
 .bodyMessage  .mainbd-body .msg-dpl span,.bodyMessage  .mainbd-body .msg-dpl-r span {
   padding-bottom: 5px;
   display: block;
@@ -357,6 +429,7 @@ justify-content: center;
 }
 .container-wrap .bodyMessage > .mainbd-ft .mainbd-ft-bd {
   height: 100%;
+  position: relative;
   width: 80%;
   display: flex;
 }
@@ -369,8 +442,23 @@ justify-content: center;
   font-size: 30px;
   cursor: pointer;
 }
+.sticker { 
+  position: absolute;
+  bottom: 110%;
+  z-index: 10;
+  height: 200%;
+  width: 80%;
+  left: 10%;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+} 
+.sticker > img {
+  height: 100%;
+}
 .bodyMessage > .mainbd-ft .mainbd-ft-bd #icon {
   margin-right: 10px;
+  position: relative;
 }
 .bodyMessage > .mainbd-ft .mainbd-ft-bd  #img:hover,.bodyMessage > .mainbd-ft .mainbd-ft-bd #icon:hover {
   color: black;
@@ -440,31 +528,9 @@ justify-content: center;
   align-items: center;
   display: flex;
 }
-.bodyMessage > .mainbd-head .mainbd-h-opt > .div1 {
-  width: 80%;
-}
-.bodyMessage > .mainbd-head .mainbd-h-opt > .div1 label {
-  font-size: 12px;
-  font-weight: normal;
-  padding-left: 5px;
-}
-.bodyMessage > .mainbd-head .mainbd-h-opt > .div1 input {
-  border: 1px solid rgb(209, 209, 209);
-  border-radius: 25px;
-  width: 90%;
-  font-size: 13px;
-  padding: 5px 10px;
-  outline: none;
-}
-.bodyMessage > .mainbd-head .mainbd-h-opt > .div1 input:focus {
-  border: 1px solid rgb(151, 151, 151) !important;
-  -moz-box-shadow: 0 0 8px rgb(219, 219, 219);
-  -webkit-box-shadow: 0 0 8px rgb(219, 219, 219);
-  box-shadow: 0 0 8px rgb(219, 219, 219);
-}
 .bodyMessage > .mainbd-head .mainbd-h-opt > .div2,.bodyMessage > .mainbd-head .mainbd-h-opt > .div3 {
   width: 10%;
-  height: 100%;
+  height: auto;
   margin-left: auto;
   display: flex;
   align-items: center;
@@ -505,7 +571,7 @@ justify-content: center;
   height: 100%;
   top: 0;
 }
-.wrapAllMSG > .list:hover .messageCard .mess-summary > .body-summary > .summ-mess-more {
+ .list:hover .messageCard .mess-summary > .body-summary > .summ-mess-more {
   display: block;
 }
 .messageCard .mess-summary > .body-summary > .summ-mess-more::before{
@@ -517,6 +583,31 @@ justify-content: center;
   display: -webkit-flex;
   display: -moz-box;
   display: -ms-flexbox;
+}
+.zoomImageMSG  i {
+  position: fixed;
+  top: 10px;
+  font-size: 3vw;
+  right: 10px;
+  cursor: pointer;
+}
+.zoomImageMSG  i:hover {
+  color: white
+}
+.zoomImageMSG > img {
+  max-width: 70%;
+  max-height: 70%;
+}
+.zoomImageMSG {   
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  z-index: 200;
+  top:0;
+  left:0;
+  justify-content: center;
+  align-items: center;
+  background-color: #18171773;
 }
 #watch-mr {
   text-align: center;
@@ -598,6 +689,7 @@ justify-content: center;
   max-height: 100%;
   border-radius: 100%;
 }
+
 /*--------------------------------------------RESPONSIVE----------------------------------------*/
 
 @media screen and (max-width: 1024px) {
@@ -632,6 +724,19 @@ justify-content: center;
     display: none;
   }
 }
+.newdateMessage {
+  width: 100%;
+  margin: 30px 0;
+  text-align: center;
+}
+.newdateMessage > span {
+  border: 20px;
+  font-weight: 800;
+  border-radius: 10px;
+  font-style: italic;
+  padding: 10px 20px;
+  background-color: #b6cfcf;
+}
 @media screen and (max-width: 768px) {
   .bodyMessage > .mainbd-head .mainbd-h-inf > h4 {
     font-size: 18px;
@@ -639,9 +744,6 @@ justify-content: center;
   .container-wrap .bodyMessage > .mainbd-head > img {
     width: 50px;
     height: 50px;
-  }
-  .bodyMessage > .mainbd-head .mainbd-h-opt > .div1 {
-    display: none;
   }
   .container-wrap .navMenu {
     width: 90px;
@@ -2316,11 +2418,11 @@ body, html {
 }
 
 /*---------------------------------------------*/
-a {
+.limiter a {
 	font-family: Raleway-Regular;
 	font-size: 14px;
 	line-height: 1.7;
-	color: #666666;
+	color: #499ce9;
 	margin: 0px;
 	transition: all 0.4s;
 	-webkit-transition: all 0.4s;
@@ -2328,13 +2430,13 @@ a {
   -moz-transition: all 0.4s;
 }
 
-a:focus {
+.limiter a:focus {
 	outline: none !important;
 }
 
-a:hover {
-	text-decoration: none;
-  color: #57b846;
+.limiter a:hover {
+	text-decoration: underline;
+  color: #499ce9;
 }
 
 /*---------------------------------------------*/
@@ -2527,7 +2629,7 @@ iframe {
   top: -1px;
   left: -1px;
   pointer-events: none;
-  border: 1px solid #57b846;
+  border: 1px solid #499ce9;
   border-radius: 3px;
 
   visibility: hidden;
@@ -2591,11 +2693,11 @@ iframe {
 }
 
 .btn-show-pass:hover {
-  color: #57b846;
+  color: #499ce9;
 }
 
 .btn-show-pass.active {
-  color: #57b846;
+  color: #499ce9;
 }
 
 /*==================================================================
@@ -2619,15 +2721,24 @@ iframe {
 .contact100-form-checkbox ~ a {
   font-family: Raleway-Regular;
   font-size: 15px;
-  color: #999999;
+  color: #499ce9;
   line-height: 1.4;
   display: block;
   position: relative;
   padding-left: 26px;
   cursor: pointer;
 }
+.forgetPassworddiv {
+  margin-bottom:  0 !important;
+}
+.forgetPassworddiv ~ a {
+  margin-bottom: 36px !important;
+}
 .contact100-form-checkbox ~ a:hover {
-  color: #57b846;
+  text-decoration: underline;
+}
+.swal-footer {
+  text-align: center;
 }
 .label-checkbox100::before {
   content: "\f00c";
@@ -2660,7 +2771,7 @@ iframe {
 }
 
 .input-checkbox100:checked + .label-checkbox100::before {
-  color: #57b846;
+  color: black;
   
 }
 /*Cusom txt*/
@@ -2677,7 +2788,7 @@ iframe {
   align-items: center;
 }
 
-h1 {
+.circle h1 {
   position: absolute;
   bottom: 0;
   color: #D5E2D6;
@@ -2693,11 +2804,11 @@ transform: scale(1) rotate(-5deg) translateX(0px) translateY(0px) skewX(1deg) sk
   
 }
 
-span:nth-child(3), span:nth-child(7) { 
+.circle span:nth-child(3), .circle span:nth-child(7) { 
 font-size: 5vw;
 }
 
-span:nth-child(1), span:nth-child(9), span:nth-child(5)  {
+.circle span:nth-child(1), .circle span:nth-child(9), .circle span:nth-child(5)  {
   font-size: 10vw;
 }
 
@@ -2741,7 +2852,10 @@ span:nth-child(1), span:nth-child(9), span:nth-child(5)  {
 }
 
 .login100-form-btn:hover {
-  background-color: #57b846;
+  background-color: #909090;
+}
+.login100-form-btn:active {
+  cursor: not-allowed;
 }
 
 

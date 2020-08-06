@@ -1,36 +1,100 @@
 import React, { Fragment } from 'react';
 import '../App.css';
+import LoginString from './../Lib/LoginString';
+import ResetPassword from './../Component/ResetPassWord/ResetPassword'
+import { connect } from 'react-redux';
+import { loadingRS } from './../Component/ResetPassWord/LoadingRS';
+import { resetPassword } from './../Lib/Dispatch';
+import swal from 'sweetalert';
 
 class ForgetPWPage extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            email: "",
+            loading: true,
+            loadingReset: false,
+        };
+    }
+    handleChangeInput = (event) => {
+        this.setState ({
+            email: event.target.value
+        })
+    }
+    onSubmitFom = async (event) => {
+        event.preventDefault();
+        this.setState({
+            loadingReset: true
+        })
+        try {
+            await this.props.onResetPassword( this.state.email );
+            if(this.props.resetStatus.status === true  ) {
+                this.setState({loadingReset: false},() => {
+                    swal({
+                        title: "Success",
+                        text: "Please check the mail box to reset your password!",
+                        icon: "success",
+                        timer: 10000,
+                    })
+                })
+            }
+            else {
+                this.setState({loadingReset: false},() => {
+                    swal({
+                        title: "Error",
+                        text: this.props.resetStatus.message,
+                        icon: "error",
+                        timer: 10000,
+                    })
+                })
+            }
+        }
+        catch (err) {
+            alert(err)
+        }
+        this.setState({
+            loadingReset: false
+        })
+    }
+    componentDidMount(){
+        if( localStorage.getItem(LoginString.ID) ) {
+            this.setState({loading: false},() => {
+                this.props.history.push("/")
+            })
+        }
+        else {
+            this.setState({
+                loading: false
+            })
+        }
+    }
     render(){
-        return(
-            <Fragment>
-                <div className="limiter">
-                    <div className="container-login100">
-                        <div className="wrap-login100 p-l-85 p-r-85 p-t-55 p-b-55">
-                            <form className="login100-form validate-form flex-sb flex-w">
-                                <span className="login100-form-title p-b-32">
-                                    Reset your pasword
-                                </span>
 
-                                <span className="txt1 p-b-11">
-                                    Your email
-                                </span>
-                                <div className="wrap-input100 validate-input m-b-36" data-validate = "Username is required">
-                                    <input className="input100" type="text" name="username" />
-                                    <span className="focus-input100"></span>
-                                </div>
-                                <div className="container-login100-form-btn">
-                                    <button className="login100-form-btn">
-                                        Send me new password!
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </Fragment>
+        return this.state.loading === true ? 
+        ( loadingRS() )
+        :
+        (
+        <Fragment>
+            { this.state.loadingReset === true ? ( loadingRS() ) : "" }
+            <ResetPassword 
+            value = { this.state.email }
+            handleChangeInput = { this.handleChangeInput }
+            onSubmitFom = { this.onSubmitFom }
+            />
+        </Fragment>
         );
     }
 }
-export default ForgetPWPage;
+const mapStateToProps = (state) => {
+    return {
+        resetStatus: state.user
+    }
+}
+const mapDispatchToProps = ( dispatch, props ) =>{ 
+    return {
+        onResetPassword: async (email) => {
+            await dispatch( resetPassword(email) )
+        }
+    }
+}
+export default connect(mapStateToProps,mapDispatchToProps)(ForgetPWPage);

@@ -1,0 +1,6 @@
+export const FETCH_USER = "FETCH_USER";
+export const FETCH_ALL_USERS = "FETCH_ALL_USERS";
+export const FETCH_MESSAGES = "FETCH_MESSAGES";
+export const CHECK_LOGIN_USER = "CHECK_LOGIN_USER";
+export const REGISTER_USER = "REGISTER_USER";
+export const RESET_PASSWORD = "RESET_PASSWORD";
