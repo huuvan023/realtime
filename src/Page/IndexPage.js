@@ -8,7 +8,7 @@ import LoginString from './../Lib/LoginString';
 import { connect } from 'react-redux';
 import { fetchUser } from '../Lib/Dispatch';
 import { loadingDashboard } from './../Component/Dashboard/LoadingDashboard';
-import { fetchAllUserTab } from './../Lib/Dispatch';
+import { fetchAllUserTab,sendMessage,fetchPeerMessage } from './../Lib/Dispatch';
 
 class IndexPage extends React.Component {
     constructor(props) {
@@ -16,51 +16,80 @@ class IndexPage extends React.Component {
         this.state={
             listUsers: [],
             dataUser: null,
-
-
-
+            inpuValue:"",
+            
+            currentPeerUser: null,
+            currentUser: null,
 
             status:"message",
             toggleMiniMenu: false,
             loading: true,
             openDialogLogout: false,
-            currentPeerUser: null,
             displayContactSwitchedNotification:[],
             listUserWillDisplay:[],
             
             viewUsers: null,
             keyWordFilter: "",
             isShowSticker: true,
-            inpuValue:"",
+            
             listMessage : [],
             image: {
                 file: null,
                 imagePreviewUrl: null,
             },
         }
+        this.onSendMessage = this.onSendMessage.bind(this)
+        this.listMessages = []
+        this.groupChatID = null;
+
+
         this.currentUserName = localStorage.getItem(LoginString.name);
         this.currentUserID = localStorage.getItem(LoginString.ID);
         this.currentUserDocumentID = localStorage.getItem(LoginString.firebaseDocumentID);
         this.currentUserMessage = [];
         this.searchUsers = [];
-        this.groupChatID = null;
+        
         this.currentPeerUserMessage = [];
         this.removeListener = null;
+        console.log("constructor")
         
     }
-    async componentDidUpdate() {
-        if( this.state.currentPeerUser ) {
-            await firebase.firestore()
-            .collection("users")
-            .doc(this.state.currentPeerUser.docID)
-            .get()
-            .then((docRef) => {
-                this.currentPeerUserMessage = docRef.data().message;
-            });
+    async componentWillReceiveProps(nextProps) {
+        this.getListHistory();
+    }
+    getListHistory = () => {
+        if (this.removeListener) {
+            this.removeListener()
+        }
+        if(this.state.currentPeerUser) {
+            let groupChatID = Math.abs(this.hashString(this.state.currentUser) -this.hashString(this.state.currentPeerUser) ).toString();
+
+        // Get history and listen new data added
+        this.removeListener = firebase.firestore()
+            .collection("Message")
+            .doc(groupChatID)
+            .collection(groupChatID)
+            .onSnapshot(
+                snapshot => {
+                    snapshot.docChanges().forEach(change => {
+                         
+                            this.listMessages.push(change.doc.data())
+                         
+                    })
+                    console.log(this.listMessages)
+                },
+               
+            )
         }
     }
-    async componentDidMount() {
+    async componentDidUpdate() {
+        
          
+            //console.log("did update")
+        
+    }
+    async componentDidMount() {
+ 
         if( window.innerWidth >= 0 && window.innerWidth <= 450 ){
             this.setState({
                 toggleMiniMenu: true,
@@ -72,55 +101,19 @@ class IndexPage extends React.Component {
         await this.setState({
             listUsers: this.props.dataUser.listUsers.data,
             dataUser: this.props.dataUser.userData,
+            
+        })
+        
+    //..................
+        
+        //console.log(this.state.listUsers)
+        //await this.props.onFetchAllUserTab( this.state.listUsers, this.props.dataUser );
+        this.setState({
             loading: false,
         })
-        //console.log(this.state.listUsers)
-        await this.props.onFetchAllUserTab( this.state.listUsers, this.props.dataUser );
-        //this.getListUser();
     }
   
-    /*getListUser = async () => {
-        
-        const result = await firebase.firestore().collection('users').get();
-        if( result.docs.length > 0 ) {
-            let listUser = [];
-            listUser = [...result.docs];
-            listUser.forEach((item,index)   => {
-                this.searchUsers.push({
-                    key: index,
-                    documentKey: item.id,
-                    id: item.data().id,
-                    name: item.data().name,
-                    message: item.data().message,
-                    URL: item.data().URL,
-                })
-            })
-            
-            this.onRenderListUser();
-            this.setState({
-                loading: false,
-            })
-        }
-    }
-    onRenderListUser = () => {
-        if( this.searchUsers.length > 0 ) {
-            let viewUsers = [];
-            this.searchUsers.map((item) => {
-                if( item.id !== this.currentUserID ) {
-                    viewUsers.push({
-                        id: item.id,
-                        name: item.name
-                    })
-                }
-            })
-            this.setState({
-                viewUsers: viewUsers
-            })
-            
-        }
-    }*/
-    
-    
+ 
     toggleMiniMenu = () => {
         if( window.innerWidth >= 0 && window.innerWidth <= 450 ){
             this.setState({
@@ -134,57 +127,24 @@ class IndexPage extends React.Component {
         }
     }
 
-    onsetCurrentPeer = async (item) => {
-        if( this.state.currentPeerUser === null || this.state.currentPeerUser !== item ) {
-            let docID = null;
-            await firebase.firestore().collection("users")
-            .where("id", "==", item.id).get()
-            .then((querySnapShot) => {
-                querySnapShot.forEach((doc) => {
-                    docID = doc.id;
-                });
-            })
-            .catch((error) => {
-                window.alert( error);
-            })
-            if( docID !== null ) {
-                item["docID"] = docID;
-                this.setState({
-                    currentPeerUser : item,
-                });
-            }
-            if( this.currentUserID && this.state.currentPeerUser ) {
-                this.groupChatID = Math.abs(this.hashString(this.currentUserID) - this.hashString(this.state.currentPeerUser.id) ).toString();
-            }
-
-            let listMSGArr = [];
-            await firebase.firestore()
-            .collection("Message")
-            .doc(this.groupChatID)
-            .collection(this.groupChatID)
-            .onSnapshot((Snapshot) => {
-                Snapshot.docChanges().forEach((changed) => {
-                        listMSGArr.push(changed.doc.data());
-                })
-                this.setState({
-                    listMessage: listMSGArr
-                });
-            })
-        }
-    }
+ 
     onFilterUser = (value) => {
         this.setState({
             keyWordFilter : value,
         });
     }
-    onSendMessage = async ( content,type ) => {
+    
+    async onSendMessage (){
+
+        var groupChatID = "";
         //type 0 text, 1 images, 2 sticker
-        if( type !== 1 ) {
-            if( content.trim() === "" ) {
+        if( true ) {
+            if( this.state.inpuValue.trim() === "" ) {
                 return 
             }
             if( this.currentUserID && this.state.currentPeerUser ) {
-                this.groupChatID = Math.abs(this.hashString(this.currentUserID) - this.hashString(this.state.currentPeerUser.id) ).toString();
+                groupChatID = Math.abs(this.hashString(this.state.currentUser) -this.hashString(this.state.currentPeerUser) ).toString();
+                
             }
             let today = new Date();
             let date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
@@ -192,28 +152,29 @@ class IndexPage extends React.Component {
             let timestamp = date+' '+time;
 
             const itemMessage = {
-                idFrom: this.currentUserID,
-                idTo: this.state.currentPeerUser.id,
+                idFrom: this.state.currentUser,
+                idTo: this.state.currentPeerUser,
                 timestamp: timestamp,
-                content: content.trim(),
-                type: type
+                content: this.state.inpuValue.trim(),
+                type: 1
             }
             await firebase.firestore()
             .collection("Message")
-            .doc(this.groupChatID)
+            .doc(groupChatID)
             .set({
                 lastModified: timestamp
             })
-            .then(() => {  })
+            .then(() => { console.log("sended !")  })
             .catch( error => alert(error) )
 
             await firebase.firestore()
             .collection("Message")
-            .doc(this.groupChatID)
-            .collection(this.groupChatID)
+            .doc(groupChatID)
+            .collection(groupChatID)
             .doc(timestamp)
             .set(itemMessage)
             .then(() => {
+                console.log("sended!")
                 this.setState({
                     inpuValue:"",
                 });
@@ -221,8 +182,8 @@ class IndexPage extends React.Component {
             let listMSGArr = [];
             await firebase.firestore()
             .collection("Message")
-            .doc(this.groupChatID)
-            .collection(this.groupChatID)
+            .doc(groupChatID)
+            .collection(groupChatID)
             .onSnapshot((Snapshot) => {
                 Snapshot.docChanges().forEach((changed) => {
                         listMSGArr.push(changed.doc.data());
@@ -231,67 +192,14 @@ class IndexPage extends React.Component {
                     listMessage: listMSGArr
                 });
             })
-        }
-        else {
-            
-            let ref = firebase.storage().ref();
-            let file = content;
-            let metadata = {
-                contentTYpe: file.type,
-            }
-            const task = ref.child(file.name).put(file,metadata);
-            task.then( snapshot => snapshot.ref.getDownloadURL() )
-            .then( async url => {
-                if( this.currentUserID && this.state.currentPeerUser ) {
-                    this.groupChatID = Math.abs(this.hashString(this.currentUserID) - this.hashString(this.state.currentPeerUser.id) ).toString();
-                }
-                let today = new Date();
-                let date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
-                let time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-                let timestamp = date+' '+time;
-                const itemMessage = {
-                    idFrom: this.currentUserID,
-                    idTo: this.state.currentPeerUser.id,
-                    timestamp: timestamp,
-                    content: url,
-                    type: type,
-                    seen: false,
-                }
-                    await firebase.firestore()
-                    .collection("Message")
-                    .doc(this.groupChatID)
-                    .collection(this.groupChatID)
-                    .doc(timestamp)
-                    .set(itemMessage)
-                    .then(() => {
-                    });
 
-                    let listMSGArr = [];
-                    await firebase.firestore()
-                    .collection("Message")
-                    .doc(this.groupChatID)
-                    .collection(this.groupChatID)
-                    .onSnapshot((Snapshot) => {
-                        Snapshot.docChanges().forEach((changed) => {
-                                listMSGArr.push(changed.doc.data());
-                        })
-                        this.setState({
-                            listMessage: listMSGArr
-                        });
-                    })
-            })
         }
         
-  
-    }
-    onKeyboardPress = (event) => {
-       
-            //this.onSendMessage(this.state.inpuValue, 0);
         
     }
     onChangeInputValue = (value) => {
         this.setState({
-            inpuValue: value
+            inpuValue: value.target.value
         })
     }
     onSendSticker = (a,b) => {
@@ -308,28 +216,10 @@ class IndexPage extends React.Component {
         this.props.history.push("/");
         localStorage.clear();     
     }
-    onGetListHistoryMSG = () => {
-        this.listMessage.length = 0;
-        if( this.currentUserID && this.state.currentPeerUser ) {
-            this.groupChatID = Math.abs(this.hashString(this.currentUserID) - this.hashString(this.state.currentPeerUser.id) )
-        }
-        //get history and new listener were added
-        this.removeListener = firebase.firestore()
-        .collection("Message")
-        .doc(this.groupChatID)
-        .collection(this.groupChatID)
-        .onSnapshot((Snapshot) => {
-            Snapshot.docChanges().forEach((changed) => {
-                if( changed.type === "added" ) {
-                    this.listMessage.push(changed.doc.data());
-                }
-            })
-        })
-        .catch((err) =>  { window.alert(err) })
-    }
     onUploadImage = (e) => {
         this.onSendMessage(e,1);
     }
+
     hashString = (string) => {
         let hash = 0;
         for ( let i = 0; i< string.length ; i++ ) {
@@ -342,7 +232,7 @@ class IndexPage extends React.Component {
         this.onSendMessage("sayHi.gif",2)
     }
     render(){ 
-         
+       //console.log(this.state.currentPeerUser,this.state.currentUser)
         //filter username
         var viewUsers = this.state.listUsers;
         if( viewUsers.length > 0 ) {
@@ -365,7 +255,13 @@ class IndexPage extends React.Component {
                 </nav>
                 { !this.state.toggleMiniMenu ?
                 <Main onsetCurrentPeer = { this.onsetCurrentPeer } 
+                listMessages = { this.listMessages }
+                onFetchPeerMessage = { this.onFetchPeerMessage }
                 currentPeerUser = { this.state.currentPeerUser }
+                currentUser = { this.state.currentUser }
+
+
+
                 onFilterUser = { this.onFilterUser } 
                 currentUserName = { this.currentUserName }
                 viewUsers = { viewUsers } 
@@ -375,6 +271,7 @@ class IndexPage extends React.Component {
                 onUploadImage = { this.onUploadImage }
                 currentUserID = { this.currentUserID }
                 onSayHi = { this.onSayHi }
+                onSendMessage = { this.onSendMessage }
                 onSendMessage = { this.onSendMessageClick }
                 listMessage = { this.state.listMessage }
                 status = { this.state.status }
@@ -391,6 +288,16 @@ class IndexPage extends React.Component {
         this.setState({
             status: status,
         });
+    }
+    onFetchPeerMessage = async (userID,item,messages) => {
+        
+        await this.props.onFetchPeerMessages(userID,item,messages)
+        await this.setState({
+            currentUser: this.props.peerMessages.userID,
+            currentPeerUser: this.props.peerMessages.conversationWith,
+        })
+        this.listMessages = this.props.peerMessages.messages
+        console.log("vo dc sau fetch ",this.listMessages)
     }
     onTest = () => {
         this.groupChatID = Math.abs(this.hashString(this.currentUserID) - this.hashString(this.state.currentPeerUser.id) ).toString();
@@ -411,7 +318,8 @@ class IndexPage extends React.Component {
 const mapStateToProps = ( state ) => {
     return {
         dataUser: state.user,
-        messages: state.messages
+        messages: state.messages,
+        peerMessages: state.peerMessage,
     }
 }
 const mapDispatchToProps = ( dispatch, props ) => {
@@ -421,6 +329,12 @@ const mapDispatchToProps = ( dispatch, props ) => {
         },
         onFetchAllUserTab: async (listUsers,dataUser) => {
             await dispatch(fetchAllUserTab( listUsers,dataUser ))
+        },
+        onSendMessage: async (infor,vl,type) => {
+            await dispatch(sendMessage(infor,vl,type))
+        },
+        onFetchPeerMessages: async (userID,item,listMessages) => {
+            await dispatch(fetchPeerMessage( userID,item,listMessages ))
         }
     }
 }

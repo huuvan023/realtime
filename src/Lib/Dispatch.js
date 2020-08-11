@@ -179,9 +179,7 @@ function hashString (string) {
     return hash;
 }
 function createGroupchatID ( string1, string2 ) {
-    if( (Math.abs(hashString(string1) - hashString(string2) )).toString() === "1154699748" ) {
-        return "2108509";
-    }
+ 
    return (Math.abs(hashString(string1) - hashString(string2) )).toString();
 }
 function convertToString(value){
@@ -211,18 +209,19 @@ export const fetchAllUserTab = (listUsers,dataUser) => {
                         .collection("Message")
                         .doc(createGroupchatID(listUsers[i].dataUser.id,dataUser.userData.data.id))
                         .collection(createGroupchatID(listUsers[i].dataUser.id,dataUser.userData.data.id))
-                        .get()
-                        .then( async result => {
-                            await result.forEach( item => {
-                                userMessage.push(item.data())
+                        .onSnapshot( Snapshot => {
+                            Snapshot.docChanges().forEach( item =>{ 
+                                userMessage.push(item.doc.data())
+
                             })
-                        })
-                        .then( () =>{
                             listMessage.push({
                                 conversationWith: listUsers[i].dataUser,
                                 messages: userMessage,
+                                conversationID: createGroupchatID(listUsers[i].dataUser.id,dataUser.userData.data.id)
                             })
                             userMessage = [];
+                      
+                            
                         })
                    }
                 })
@@ -231,18 +230,139 @@ export const fetchAllUserTab = (listUsers,dataUser) => {
             dispatch( action.fetchAllMessage(listMessage) );
     }
 }
-export const fetchPeerMessage = ( host,peer ) => {
+export const fetchPeerMessage = ( userID,item,listMessages ) => {
+    
+    //console.log("fetch user message")
+    return async (dispatch) => {  
+       let converID = createGroupchatID(item.dataUser.id,userID)
+       dispatch( action.fetchPeerMessages(converID,listMessages,userID,item.dataUser.id) )
+    }
+}
+
+export const sendMessage = ( infor,content,type ) => {
     return async (dispatch) => {
-        await firebase.firestore()
-        .collection("Message")
-        .doc( createGroupchatID(host,peer) )
-        .collection( createGroupchatID(host,peer) )
-        .onSnapshot( snapShot => {
-            let messages = [];
-            snapShot.docChanges().forEach( async item => {
-                messages.push(item.doc.data())
+         
+        var listMessage = [];
+        var userMessage = [];
+        var currentUserID = infor.userID;
+        var currentPeerUser = infor.conversationWith;
+        if( type === 1 ) {
+            
+            if( content.trim() === "" ) {
+                return 
+            }
+            var groupChatID = null;
+            if( currentUserID && currentPeerUser ) {
+                groupChatID = Math.abs(hashString(currentUserID) - hashString(currentPeerUser) ).toString();
+            }
+            let today = new Date();
+            let date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+            let time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+            let timestamp = date+' '+time;
+
+            const itemMessage = {
+                idFrom: currentUserID,
+                idTo: currentPeerUser,
+                timestamp: timestamp,
+                content: content.trim(),
+                type: type
+            }
+            await firebase.firestore()
+            .collection("Message")
+            .doc(groupChatID)
+            .set({
+                lastModified: timestamp
             })
-            dispatch( action.fetchAllMessage(messages) )
-        })
+            .then(() => {  })
+            .catch( error => alert(error) )
+
+
+            await firebase.firestore()
+                .collection("Message")
+                .doc(groupChatID)
+                .collection(groupChatID)
+                .doc(timestamp)
+                .set(itemMessage)
+                .then( async result => {
+                     
+                    await firebase.firestore()
+                        .collection("Message")
+                        .doc(groupChatID)
+                        .collection(groupChatID)
+                        .onSnapshot(async (Snapshot) => {
+                            console.log("vo dc snapshot")
+                            await Snapshot.docChanges().forEach( item =>{ 
+                                userMessage.push(item.doc.data())
+            
+                            })
+                            console.log(userMessage)
+                            console.log("dispatch ne")
+                            
+                        })
+                    
+                })
+                
+
+
+         
+             
+         
+
+            
+            
+            
+        }
+        /*
+        else {
+            
+            let ref = firebase.storage().ref();
+            let file = content;
+            let metadata = {
+                contentTYpe: file.type,
+            }
+            const task = ref.child(file.name).put(file,metadata);
+            task.then( snapshot => snapshot.ref.getDownloadURL() )
+            .then( async url => {
+                if( this.currentUserID && this.state.currentPeerUser ) {
+                    this.groupChatID = Math.abs(this.hashString(this.currentUserID) - this.hashString(this.state.currentPeerUser.id) ).toString();
+                }
+                let today = new Date();
+                let date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+                let time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+                let timestamp = date+' '+time;
+                const itemMessage = {
+                    idFrom: this.currentUserID,
+                    idTo: this.state.currentPeerUser.id,
+                    timestamp: timestamp,
+                    content: url,
+                    type: type,
+                    seen: false,
+                }
+                    await firebase.firestore()
+                    .collection("Message")
+                    .doc(this.groupChatID)
+                    .collection(this.groupChatID)
+                    .doc(timestamp)
+                    .set(itemMessage)
+                    .then(() => {
+                    });
+
+                    let listMSGArr = [];
+                    await firebase.firestore()
+                    .collection("Message")
+                    .doc(this.groupChatID)
+                    .collection(this.groupChatID)
+                    .onSnapshot((Snapshot) => {
+                        Snapshot.docChanges().forEach((changed) => {
+                                listMSGArr.push(changed.doc.data());
+                        })
+                        this.setState({
+                            listMessage: listMSGArr
+                        });
+                    })
+            })
+        }*/
+        
+  
     }
 }

@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react'
 import DialogDeleteMessage from './DialogDeleteMessage'
 import { connect } from 'react-redux'
-
+import firebase from './../../Services/Firebase'
 
 class Avatar extends React.Component {
     render(){
@@ -25,12 +25,24 @@ class ListMessage extends React.Component {
             url: url,
         });
     }
+    hashString = (string)  => {
+        let hash = 0;
+        for ( let i = 0; i< string.length ; i++ ) {
+            hash += Math.pow(string.charCodeAt(i) * 31, string.length - i );
+            hash = hash & hash;
+        }
+        return hash;
+    }
+ 
     render() {
+        console.log(this.props.currentUserID, this.props.currentPeerUserid )
         var result = null;
-        if( this.props.messages && this.props.messages.length > 0 ) {
+         
+        if(  this.props.listMessages.length > 0 ) {
             let previousMessage = null;
-            console.log(this.props.messages)
-            result = this.props.messages.map((item,index) => {
+            
+            result = this.props.listMessages.map((item,index) => {
+                //console.log(item)
                 let boolCheck = false;
                     if( previousMessage === item.idFrom ) {
                         boolCheck = true;
@@ -40,7 +52,7 @@ class ListMessage extends React.Component {
                     }
                     previousMessage = item.idFrom;
                 switch( item.type ) {
-                    case 0 :
+                    case 1 :
                         if( item.idFrom === this.props.currentUserID ) {
                             return (
                                 <div className= "msg-dpl-r" key = { index } >
@@ -71,7 +83,8 @@ class ListMessage extends React.Component {
                             )
                         }
                         break;
-                    case 1 :
+                    case 0 :
+                         
                         if( item.idFrom === this.props.currentUserID ) {
                             return (
                                 <div className= "msg-dpl-r" key = { index } >

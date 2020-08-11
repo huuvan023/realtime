@@ -49,15 +49,29 @@ export const fetchListUsers = (listUsers,errorfetchAllFriend) => {
         type: action.FETCH_ALL_USERS
     }
 }
-export const fetchAllUserTab = () => {
+export const fetchPeerMessages = (conversationID,listMessages,userID,peerID) => {
     return {
-        
+        conversationID,
+        userID,
+        peerID,
+        listMessages,
+        type: action.FETCH_PEER_MESSAGES
     }
 }
 export const fetchAllMessage = (message) => {
-     console.log(message)
     return {
         type: action.FETCH_MESSAGES,
         messages: message,
+    }
+}
+export const updatePeerMessages = ( message,converWith,userID ) => {
+    console.log(message)
+    return {
+        messages: {
+            conversationWith: converWith,
+            messages: message,
+            userID: userID
+        },
+        type: action.UPDATE_PEER_MESSAGES
     }
 }

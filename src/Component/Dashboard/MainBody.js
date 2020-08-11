@@ -3,11 +3,11 @@ import ListMessage from './ListMessage';
 import WelCome from './Welcome'
 import ModifiedMessagePeer from './ButtonOpenModifiedMessage';
 import Sticker from './Stickers';
-import Button from '@material-ui/core/Button';
-import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
-import { makeStyles } from '@material-ui/core/styles';
-import ImageUploader from 'react-images-upload';
+import { connect } from 'react-redux';
+import { sendMessage } from './../../Lib/Dispatch'
+import firebase from './../../Services/Firebase'
+
 
 function Alert(props) {
     return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -18,22 +18,50 @@ class MainBody extends React.Component{
         super(props);
         this.state = {
             showSticker: false,
+            content: "",
             snackBarOpen: true,
         }
     }
     onUploadImage = (event) => {
         this.props.onUploadImage(event.target.files[0]);
     }
+    componentDidUpdate(){
+        //console.log(this.props.peerMessages)
+    }
+    /*async componentDidMount(){
+        if( this.props.currentUserID && this.props.currentPeerUser ) {
+            var groupChatID = Math.abs(this.hashString(this.state.currentUser) -this.hashString(this.state.currentPeerUser) ).toString();
+          
+            let listMSGArr = [];
+                await firebase.firestore()
+                .collection("Message")
+                .doc(groupChatID)
+                .collection(groupChatID)
+                .onSnapshot((Snapshot) => {
+                    Snapshot.docChanges().forEach((changed) => {
+                            listMSGArr.push(changed.doc.data());
+                    })
+                     console.log(listMSGArr)
+                })
+
+            }
+    }*/
+    
     render() {
+        console.log(this.props.currentUser,this.props.currentPeerUser)
         var renderListMSG = "";
-        if( this.props.listMessage.length > 0 ) {
+
+        if( typeof this.props.peerMessages.messages !== "undefined" ) {
             renderListMSG = <ListMessage 
-            currentUserID = { this.props.currentUserID }
-            currentPeerUserid = { this.props.currentPeerUser.id }
-            listMessage={ this.props.listMessage } />
+             
+            currentUserID = { this.props.currentUser }
+            currentPeerUserid = { this.props.currentPeerUser }
+            listMessages ={ this.props.listMessages } />
         }
-        return this.props.currentPeerUser ? 
+
+        return this.props.peerMessages.messages  ? 
         (
+            
             <Fragment>
                 <div className="mainbd-head" style = {{ "height": this.props.offSetHeight }}>
                     <img src="./avt.jpg" alt="" />
@@ -80,9 +108,9 @@ class MainBody extends React.Component{
                             <i id="icon" onClick={ () => { this.setState({ showSticker : !this.state.showSticker }) } } className="far fa-smile ml-3"></i>
                         </div>
                         <div className="bd-field-mainbd">
-                            <input value={ this.props.inpuValue } type="text" onChange = { (e) => { this.props.onChangeInputValue(e.target.value) } } 
+                            <input value={ this.props.inpuValue } type="text" onChange = { this.onChangeInputValue } 
                             name="messageInputField" placeholder="Type your message..."/>
-                            <div onClick = { () => { this.props.onSendMessage() }} className="divi">
+                            <div onClick = { this.onSendMessage } className="divi">
                             <i className="fas fa-paper-plane"></i>
                             </div>
                         </div>
@@ -95,5 +123,19 @@ class MainBody extends React.Component{
             <WelCome/>
         )
     }
+    onChangeInputValue = (e) => {
+        this.props.onChangeInputValue(e);
+    }
+    onSendMessage =  () => {
+        
+        this.props.onSendMessage()
+        
+    }
 }
-export default MainBody;
+const mapStateToProps = state => {
+    return { 
+        peerMessages: state.peerMessage,
+        dataUser: state.user,
+    }
+}
+export default  connect(mapStateToProps,null)(MainBody);

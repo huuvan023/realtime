@@ -18,7 +18,11 @@ class Main extends React.Component{
         this.myref = React.createRef();
     }
     
-
+    onFetchPeerMessage = async (userID,item,messages) => {
+        
+        await this.props.onFetchPeerMessage(userID,item,messages)
+        //await this.props.onFetchPeerMessages(userID,item,messages)
+    }
     onShowListUsers =  (listUser) => {
         
         var result =  listUser.map(  (item, index) => {
@@ -39,6 +43,7 @@ class Main extends React.Component{
             }
         
             return <ListUser 
+                onFetchPeerMessage = { this.onFetchPeerMessage }
                 listUsers = { this.props.viewUsers }
                 dataUser = { this.props.dataUser }
                 currentUserID = { this.props.currentUserID }
@@ -159,12 +164,17 @@ class Main extends React.Component{
                 <main className="bodyMessage">
                     <MainBody currentUserName = { this.props.currentUserName } 
                     currentPeerUser = { this.props.currentPeerUser }
+                    currentUser = { this.props.currentUser }
+                    listMessages = { this.props.listMessages }   
+
+
+                     
                     offSetHeight = { heightElement }
                     onSayHi = { this.props.onSayHi }
                     height = { this.props.height }
+                    onSendMessage = { this.props.onSendMessage }
                     currentUserID = { this.props.currentUserID }
                     onOpenListSticker = { this.props.onOpenListSticker }
-                    onSendMessage = { this.props.onSendMessage }
                     onUploadImage = { this.props.onUploadImage }
                     onSendSticker = {  this.props.onSendSticker }
                     onChangeInputValue = { this.props.onChangeInputValue }
@@ -188,9 +198,9 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = ( dispatch, props ) => {
     //console.log("vo dc dispatch1")
     return {
-        onFetchPeerMessage: async (host,peer) => {
-            //console.log("vo dc dispatch 2")
-            await dispatch(fetchPeerMessage( host,peer ))
+         
+        onFetchPeerMessages: async (userID,item,listMessages) => {
+            await dispatch(fetchPeerMessage( userID,item,listMessages ))
         }
     }
 }

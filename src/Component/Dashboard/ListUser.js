@@ -17,59 +17,11 @@ class ListUser extends React.Component {
         this.groupChatID = "a";
     }
     onsetCurrentPeer = async() => {
-        console.log(this.props.dataUser)
-        console.log(this.props.item)
-        //this.props.onsetCurrentPeer(this.props.item);
-        //await this.props.onFetchPeerMessage(this.props.dataUser.userData.data.id,this.props.item.dataUser.id)
+        let { item,dataUser } = this.props;
+         
+        await this.props.onFetchPeerMessage(dataUser.userData.data.id,item,this.props.messages)
         await this.props.onSetActivePeerUser(this.props.item);
-        console.log(this.props.messages)
     }  
-    async componentDidMount () {
-        /*this.groupChatID = Math.abs(this.hashString(this.props.currentUserID) - this.hashString(this.props.item.id) ).toString();
-        let lastModified = null;
-        await firebase.firestore()
-        .collection("Message")
-        .doc(this.groupChatID)
-        .get()
-        .then( doc => {
-            if( typeof doc.data().lastModified !== "undefined" ) {
-                lastModified = doc.data().lastModified;
-            }
-        })
-        .catch( error => alert("error"));
-
-        await firebase.firestore()
-        .collection("Message")
-        .doc(this.groupChatID)
-        .get()
-        .then( async doc => {
-            if( doc.exists ){
-                await firebase.firestore()
-                .collection("Message")
-                .doc(this.groupChatID)
-                .collection(this.groupChatID)
-                .doc(lastModified)
-                .get()
-                .then( doc => {
-                    console.log(this.groupChatID)
-                    console.log(doc.data().type)
-                    console.log(doc.data().content)
-                    if( doc.data() !== null ) {
-                        this.setState({
-                            messageSum: {
-                                content: doc.data().content,
-                                type: doc.data().type,
-                            },
-                            checkClickUser: true,
-                        });
-                    }
-                })
-            }
-        })
-*/
-    
-    
-    }
     hashString = (string) => {
         let hash = 0;
         for ( let i = 0; i< string.length ; i++ ) {
@@ -79,7 +31,6 @@ class ListUser extends React.Component {
         return hash;
     }
     render(){
-         
         let messageSumDisplay = "mesage";
         if( this.groupChatID !== null && this.state.checkClickUser === true )
         {
@@ -127,11 +78,5 @@ const mapStateToProps = (state) => {
         messages: state.messages
     }
 }
-const mapDispatchToProps = ( dispatch, props ) => {
-    return {
-        onFetchPeerMessage: async (host,peer) => {
-            await dispatch(fetchPeerMessage( host,peer ))
-        }
-    }
-}
-export default connect(mapStateToProps,mapDispatchToProps)(ListUser);
+ 
+export default connect(mapStateToProps,null)(ListUser);

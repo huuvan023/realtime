@@ -1,14 +1,16 @@
 import * as type from './../Constants/actionTypes'
 
-var initialState = {};
+var initialState = [];
 
 const messages = ( state = initialState, action ) => {
     switch( action.type ) {
         case type.FETCH_MESSAGES :
-            console.log(action)
+           
             state = action.messages;
+            console.log(state)
             return state;
             break;
+        
         default:
             return state;
             break;
