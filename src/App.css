@@ -4,8 +4,12 @@
 .container-wrap {
   user-select: none;
   display: flex;
+  position: fixed;
+  top: 0;
+  left: 0;
   padding: 0;
   width: 100%;
+  height: 100vh;
   overflow: hidden;
 }
 
@@ -36,7 +40,7 @@ Nav menu
   width: 75px;
   flex-direction: column;
   position: relative;
-  height: 100%;
+  height: calc(100%-0px);
 }
 .navMenu .menuTab-respon  {
   border-right: 1px solid rgb(167, 167, 167);
@@ -170,7 +174,7 @@ Nav menu
 } 
 .chatList .header {
   width: 100%;
-  max-height: 15%;
+  height: 100px;
   padding: 10px 10px 20px 10px;
   border-bottom: 0.5px solid rgb(170, 170, 170);
 }
@@ -206,27 +210,25 @@ Nav menu
   border: 0.5px solid green;
 }
 .chatList .body {
-  height: 85%;
+  height: calc(100% - 100px);
   margin-top: 5px;
 }
 
 .chatList .body .message-list {
-  height: 70%;
-}
-.chatList .body .new-fr {
-  height: 30%;
-}
-.chatList .body .wrapAllMSG {
   height: 100%;
+}
+ 
+.chatList .body .wrapAllMSG {
+  
   position: relative;
 }
 .container {
   padding: 0 !important;
-  height: 90%;
+  height: calc(100% - 40px);
 }
 .chatList .body > .message-list .messageFilter {
   font-size: 14px;
-  max-height: 10%;
+  height: 40px;
 }
 .messageFilter .drop-title {
   position: relative;
@@ -288,6 +290,7 @@ Nav menu
   padding: 10px 20px;
   align-items: center;
   display: flex;
+  height: 100px;
 }
 .wrapMessbd {
   height: 100%;
@@ -422,10 +425,13 @@ Nav menu
   background-color: rgb(222, 224, 230);
 }
 .container-wrap .bodyMessage > .mainbd-ft {
-  height: 10%;
+  width: 100%;
   padding: 10px;
-display: flex;
-justify-content: center;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  justify-content: center;
 }
 .container-wrap .bodyMessage > .mainbd-ft .mainbd-ft-bd {
   height: 100%;
@@ -434,7 +440,7 @@ justify-content: center;
   display: flex;
 }
 .bodyMessage > .mainbd-ft .mainbd-ft-bd > .ic-sugg-mainbd {
-  width: 25%;
+  width: 10%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -523,9 +529,10 @@ justify-content: center;
   margin-left: 5px;
 }
 .bodyMessage > .mainbd-head .mainbd-h-opt {
-  width: 40%;
+  margin-left: auto;
   font-size: 20px;
   align-items: center;
+  margin-right: 40px;
   display: flex;
 }
 .bodyMessage > .mainbd-head .mainbd-h-opt > .div2,.bodyMessage > .mainbd-head .mainbd-h-opt > .div3 {
@@ -647,7 +654,7 @@ justify-content: center;
   padding: 5px;
 }
 .list-new-fr {
-  height: 90%;
+  height: calc(100% - 20px);
 }
 .list-fr-crd .list-fr-bd {
   padding: 10px;
@@ -696,9 +703,7 @@ justify-content: center;
   .bodyMessage > .mainbd-head .mainbd-h-inf > h4 {
     font-size: 25px;
   }
-  .chatList .body {
-    height: 90%;
-  }
+   
   .bodyMessage > .mainbd-head .mainbd-h-opt > .div2,.bodyMessage > .mainbd-head .mainbd-h-opt > .div3 {
     font-size: 20px;
   }
@@ -804,17 +809,7 @@ justify-content: center;
   -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
 }
 /*--------------------NEW FRIEND--------*/
-.body > .message-list ~ .new-fr {
-  border-top: 0.5px solid rgb(170, 170, 170);  
-  padding: 10px;
-  height: 30%;
-}
-.body > .message-list ~ .new-fr > h4 {
-  font-size: 14px;
-  color: #555555;
-  height: 10%;
-  margin-bottom: 10px;
-}
+ 
 
 /***************  LOGIN  ***************/
 /*!

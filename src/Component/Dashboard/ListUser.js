@@ -17,9 +17,7 @@ class ListUser extends React.Component {
         this.groupChatID = "a";
     }
     onsetCurrentPeer = async() => {
-        let { item,dataUser } = this.props;
-         
-        await this.props.onFetchPeerMessage(dataUser.userData.data.id,item,this.props.messages)
+        let { item } = this.props;
         await this.props.onSetActivePeerUser(this.props.item);
     }  
     hashString = (string) => {

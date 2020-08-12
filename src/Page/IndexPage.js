@@ -231,6 +231,9 @@ class IndexPage extends React.Component {
     onSayHi = () => {
         this.onSendMessage("sayHi.gif",2)
     }
+    fetchPeerMessage = (user) => {
+        console.log(user)
+    }
     render(){ 
        //console.log(this.state.currentPeerUser,this.state.currentUser)
         //filter username
@@ -248,7 +251,7 @@ class IndexPage extends React.Component {
         return this.state.loading === true ? 
         ( loadingDashboard() )
         :
-        ( <div style={{ "height": height*(99.9/100) }} className="container-wrap">
+        ( <div   className="container-wrap">
                 <nav  className="navMenu">
                     <Nav history = { this.props.history } status = { this.state.status } onChangDPLStatus = { this.onChangDPLStatus } />
                     <ResponsiveNav/>
@@ -259,7 +262,7 @@ class IndexPage extends React.Component {
                 onFetchPeerMessage = { this.onFetchPeerMessage }
                 currentPeerUser = { this.state.currentPeerUser }
                 currentUser = { this.state.currentUser }
-
+                fetchPeerMessage = { this.fetchPeerMessage }
 
 
                 onFilterUser = { this.onFilterUser } 
@@ -280,7 +283,9 @@ class IndexPage extends React.Component {
                 onChangeInputValue = { this.onChangeInputValue }
                 history = { this.props.history } 
                 onSendSticker = { this.onSendSticker }
-                stringMess = { this.state.stringMess } /> : <MainResponsive/> }
+                stringMess = { this.state.stringMess } /> 
+                : 
+                <MainResponsive/> }
             </div>
         );
     }
