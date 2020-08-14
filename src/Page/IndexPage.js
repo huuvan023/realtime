@@ -154,7 +154,7 @@ class IndexPage extends React.Component {
                     .then(() => {
                         console.log("sended 2 !")
                         
-                    });
+                    });/*
                     await firebase.firestore()
                     .collection("Message")
                     .doc(this.groupChatID)
@@ -164,11 +164,11 @@ class IndexPage extends React.Component {
                         Snapshot.docChanges().forEach((changed) => {
                             listMessages.push(changed.doc.data());
                         })
-                        console.log("Snapshot current peer",listMessages)
+                        console.log("Snapshot send current peer",listMessages)
                         this.setState({
                             listMessages: listMessages
                         });
-                    })
+                    })*/
                     break
             }
         }
@@ -359,7 +359,7 @@ class IndexPage extends React.Component {
                 currentUserID = { this.currentUserID }
                 onSayHi = { this.onSayHi }
                  
-                 
+                 /*
                 
                 status = { this.state.status }
                 inpuValue = { this.state.inpuValue}
@@ -367,7 +367,7 @@ class IndexPage extends React.Component {
                 onChangeInputValue = { this.onChangeInputValue }
                 history = { this.props.history } 
                 onSendSticker = { this.onSendSticker }
-                stringMess = { this.state.stringMess } /> 
+                stringMess = { this.state.stringMess } *//> 
                 : 
                 <MainResponsive/> }
             </div>
@@ -397,10 +397,11 @@ class IndexPage extends React.Component {
                 Snapshot.docChanges().forEach((changed) => {
                     listMessages.push(changed.doc.data());
                 })
-                console.log("Snapshot send current peer",listMessages)
+                
                 this.setState({
                     listMessages: listMessages,
                 })
+                console.log("Snapshot current peer",this.state.listMessages)
             })
         }
         

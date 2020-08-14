@@ -33,11 +33,13 @@ class ListMessage extends React.Component {
         }
         return hash;
     }
- 
+    componentDidUpdate(){
+        console.log("update")
+    }
     render() {
         //console.log( this.props.listMessage )
         var result = null;
-        console.log(this.props.listMessages)
+        console.log("vo dc listtt trong")
         if(  this.props.listMessages.length > 0 ) {
             //console.log(this.props.currentUser);
             //console.log(this.props.currentPeerUser)

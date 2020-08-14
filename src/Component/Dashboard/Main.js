@@ -10,46 +10,7 @@ import TabChat from './TabChat'
 import SendMessage from './SendMessage';
 
 class Main extends React.Component{
-    constructor(props) {
-        super(props);
-        this.state = {
-
-        }
-        this.receiveProps = false ;
-
-    }
-    async componentWillMount() {
-        if( this.props.currentPeerUser   ){
-           
-        }
-         
-    }
-    async componentDidUpdate() {
-        if( this.props.currentPeerUser   ){
-            //console.log("receive prosp user")
-            //await this.props.onFetchMessagse(this.props.currentPeerUser.id,this.props.currentUser.id);
-            
-        }
-    }
-    componentWillUnmount() { 
-        this.receiveProps = false;
-    }
-    render(){   
-        //console.log(this.props.listMessages)
-        let renderListMSG = "";
-        //console.log(this.props.currentUser,this.props.currentPeerUser)
-        //console.log(this.props.messages)
-        //console.log("render main")
-        if( this.props.currentPeerUser ) {
-            //console.log("vo dc render list msg")
-            renderListMSG = <ListMessage 
-                currentUser = { this.props.currentUser }
-                currentPeerUser = { this.props.currentPeerUser }
-                listMessages = { this.props.listMessages } />
-        } 
-        else {
-            renderListMSG = ""
-        }
+    render(){  
         return(
             <Fragment>
                 <PanelGroup direction="row" 
@@ -85,22 +46,34 @@ class Main extends React.Component{
                                 <img src="./sayHi.gif" alt=""/>
                                 Vẫy tay chào nào!
                             </div>
-                            { renderListMSG }
-
+                            <ListMessage 
+                            key={ this.props.listMessages ? this.props.listMessages.length  : 0 }
+                            currentUser = { this.props.currentUser ? this.props.currentUser : null  }
+                            currentPeerUser = { this.props.currentPeerUser ? this.props.currentPeerUser  : null }
+                            listMessages = { this.props.listMessages ? this.props.listMessages  : [] } />
+                            <div
+                                style={{float: 'left', clear: 'both'}}
+                                ref={el => {
+                                    this.messagesEnd = el
+                                }}
+                            />
                         </div>
                     </div>
                 </div>
 
                <SendMessage
-                onSendMessage = { this.props.onSendMessage }
-               />
-
+                onSendMessage = { this.props.onSendMessage } />
                 </main>
                 </Content>
                 
                 </PanelGroup>
             </Fragment>
         );
+    }
+    componentDidUpdate(){
+        if(this.messagesEnd) {
+            this.messagesEnd.scrollIntoView({})
+        }
     }
 }
 
