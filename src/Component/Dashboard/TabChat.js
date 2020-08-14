@@ -31,7 +31,6 @@ class TabChat extends React.Component {
             }
         
             return <ListUser 
-            fetchMessagePeer
                 onSetActivePeerUser = { this.setActivePeer }            
                 className = { classname }
                 key= {index}

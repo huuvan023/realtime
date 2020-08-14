@@ -1,7 +1,5 @@
 import React,{ Fragment } from 'react'
 import Sticker from './Stickers';
-import { connect } from 'react-redux'
-import { sendMessage } from './../../Lib/Dispatch'
 
 class SendMessage extends React.Component{
     constructor(props){
@@ -43,15 +41,10 @@ class SendMessage extends React.Component{
             </Fragment>
         );
     }
-    onSendMessage = (currentUser,currentPeer) => {
-        this.props.onSendMessage(this.state.content,this.props.currentUser,this.props.currentPeerUser,1)
+    onSendMessage = () => {
+        this.props.onSendMessage(this.state.content,1)
     }
 }
-const mapDispatchToProps = (dispatch,props) => {
-    return {
-        onSendMessage: (a,b,c,d) => {
-            dispatch(sendMessage(a,b,c,d))
-        }
-    }
-}
-export default connect(null,null)(SendMessage);
+
+
+export default SendMessage;

@@ -7,7 +7,6 @@ import ModifiedMessagePeer from './ButtonOpenModifiedMessage';
 import ListUser from './ListUser';
 import { connect } from 'react-redux';
 import TabChat from './TabChat'
-import { fetchPeerMessage,fetchMessage } from './../../Lib/Dispatch';
 import SendMessage from './SendMessage';
 
 class Main extends React.Component{
@@ -21,9 +20,7 @@ class Main extends React.Component{
     }
     async componentWillMount() {
         if( this.props.currentPeerUser   ){
-            //console.log("receive prosp user")
-            await this.props.onFetchMessagse(this.props.currentPeerUser.id,this.props.currentUser.id);
-            this.receiveProps = true
+           
         }
          
     }
@@ -38,7 +35,7 @@ class Main extends React.Component{
         this.receiveProps = false;
     }
     render(){   
-        console.log(this.props.listMessage.length)
+        //console.log(this.props.listMessages)
         let renderListMSG = "";
         //console.log(this.props.currentUser,this.props.currentPeerUser)
         //console.log(this.props.messages)
@@ -48,7 +45,7 @@ class Main extends React.Component{
             renderListMSG = <ListMessage 
                 currentUser = { this.props.currentUser }
                 currentPeerUser = { this.props.currentPeerUser }
-                listMessage = { this.props.listMessage } />
+                listMessages = { this.props.listMessages } />
         } 
         else {
             renderListMSG = ""
@@ -94,9 +91,7 @@ class Main extends React.Component{
                     </div>
                 </div>
 
-               <SendMessage 
-                currentUser = { this.props.currentUser }
-                currentPeerUser = { this.props.currentPeerUser }
+               <SendMessage
                 onSendMessage = { this.props.onSendMessage }
                />
 
@@ -109,24 +104,6 @@ class Main extends React.Component{
     }
 }
 
-const mapStateToProps = (state) => {
-    return {
-        messages: state.messages
-    }
-}
-const mapDispatchToProps = ( dispatch, props ) => {
-    //console.log("vo dc dispatch1")
-    return {
-         
-        onFetchPeerMessages: async (userID,item,listMessages) => {
-            await dispatch(fetchPeerMessage( userID,item,listMessages ))
-        },
-        onFetchMessagse: (peerID,userID) => {
-            //console.log(" dispatch msg")
-            dispatch( fetchMessage(peerID,userID) )
-        }
-    }
-}
-export default connect(mapStateToProps,mapDispatchToProps)(Main);
+export default Main;
 
  

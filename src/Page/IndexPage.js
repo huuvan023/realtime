@@ -17,10 +17,13 @@ class IndexPage extends React.Component {
             listUsers: [],
             dataUser: null,
             inpuValue:"",
-            
             currentPeerUser: null,
-            currentUser: null,
+            listMessages: [],
 
+
+
+            
+            currentUser: null,
             status:"message",
             toggleMiniMenu: false,
             loading: true,
@@ -38,6 +41,12 @@ class IndexPage extends React.Component {
                 imagePreviewUrl: null,
             },
         }
+        this.currentUser = null;
+
+
+
+
+
         this.onSendMessage = this.onSendMessage.bind(this)
         this.listMessages = []
         this.groupChatID = null;
@@ -51,7 +60,7 @@ class IndexPage extends React.Component {
         
         this.currentPeerUserMessage = [];
         this.removeListener = null;
-        console.log("constructor")
+    
         
     }
     async componentWillReceiveProps(nextProps) {
@@ -77,9 +86,9 @@ class IndexPage extends React.Component {
         await this.setState({
             listUsers: this.props.dataUser.listUsers.data,
             dataUser: this.props.dataUser.userData,
-            
         })
-        
+        this.currentUser = this.props.dataUser.userData.data;
+        console.log(this.state.listUsers)
     //..................
         
         //console.log(this.state.listUsers)
@@ -109,8 +118,60 @@ class IndexPage extends React.Component {
             keyWordFilter : value,
         });
     }
-    sendMessage = async () => {
+    sendMessage = async (content,type) => { 
+        if( this.currentUser && this.state.currentPeerUser.id !== this.currentUser.id  ) {
+            switch( type ) {
+                case 1:
+                    if( content === "" ) return;
 
+                    let today = new Date();
+                    let date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+                    let time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+                    let timestamp = date+' '+time;
+
+                    const itemMessage = {
+                        idFrom: this.currentUser.id ,
+                        idTo: this.state.currentPeerUser.id,
+                        timestamp: timestamp,
+                        content: content,
+                        type: 1
+                    }
+                    await firebase.firestore()
+                    .collection("Message")
+                    .doc(this.groupChatID)
+                    .set({
+                        lastModified: timestamp
+                    })
+                    .then(() => { console.log("sended !") })
+                    .catch( error => alert(error) )
+
+                    await firebase.firestore()
+                    .collection("Message")
+                    .doc(this.groupChatID)
+                    .collection(this.groupChatID)
+                    .doc(timestamp)
+                    .set(itemMessage)
+                    .then(() => {
+                        console.log("sended 2 !")
+                        
+                    });
+                    await firebase.firestore()
+                    .collection("Message")
+                    .doc(this.groupChatID)
+                    .collection(this.groupChatID)
+                    .onSnapshot((Snapshot) => {
+                        let listMessages = [];
+                        Snapshot.docChanges().forEach((changed) => {
+                            listMessages.push(changed.doc.data());
+                        })
+                        console.log("Snapshot current peer",listMessages)
+                        this.setState({
+                            listMessages: listMessages
+                        });
+                    })
+                    break
+            }
+        }
     }
     async onSendMessage (content,currentUser,currentPeerUser,type){
         //console.log(currentUser,currentPeerUser)
@@ -212,12 +273,12 @@ class IndexPage extends React.Component {
         this.onSendMessage("sayHi.gif",2)
     }
     fetchPeerMessage = async (user) => {
-        await this.setState({
+        /*await this.setState({
             currentPeerUser: user.dataUser,
             currentUser: this.props.dataUser.userData.data
         })
         await this.props.onFetchMessagse(this.state.currentPeerUser.id,this.state.currentUser.id);
-        console.log(this.props.messages)
+        //console.log(this.props.messages)
         /*console.log(this.props.peerUser , this.state.dataUser)
         if( user === null || this.props.dataUser !== user ) {
             let docID = null;
@@ -256,8 +317,7 @@ class IndexPage extends React.Component {
         }*/
     }
     render(){ 
-        console.log(this.props.messages)
-       //console.log(this.state.currentPeerUser,this.state.currentUser)
+        //console.log(this.props.dataUser)
         //filter username
         var viewUsers = this.state.listUsers;
         if( viewUsers.length > 0 ) {
@@ -280,13 +340,13 @@ class IndexPage extends React.Component {
                 </nav>
                 { !this.state.toggleMiniMenu ?
                 <Main onsetCurrentPeer = { this.onsetCurrentPeer } 
-                listMessages = { this.listMessages }
-                onFetchPeerMessage = { this.onFetchPeerMessage }
+                listMessages = { this.state.listMessages }
                 currentPeerUser = { this.state.currentPeerUser }
-                currentUser = { this.state.currentUser }
+                currentUser = { this.currentUser }
+                onSendMessage = { this.sendMessage }
+
                 fetchPeerMessage = { this.fetchPeerMessage }
-                listMessage = { this.props.messages }
-                sendMessage = { this.sendMessage }
+                
 
 
                 onFilterUser = { this.onFilterUser } 
@@ -298,7 +358,7 @@ class IndexPage extends React.Component {
                 onUploadImage = { this.onUploadImage }
                 currentUserID = { this.currentUserID }
                 onSayHi = { this.onSayHi }
-                onSendMessage = { this.onSendMessage }
+                 
                  
                 
                 status = { this.state.status }
@@ -318,29 +378,32 @@ class IndexPage extends React.Component {
             status: status,
         });
     }
-    onFetchPeerMessage = async (userID,item,messages) => {
+    fetchPeerMessage = async (item) => {
         
-        await this.props.onFetchPeerMessages(userID,item,messages)
         await this.setState({
-            currentUser: this.props.peerMessages.userID,
-            currentPeerUser: this.props.peerMessages.conversationWith,
-        })
-        this.listMessages = this.props.peerMessages.messages
-        console.log("vo dc sau fetch ",this.listMessages)
-    }
-    onTest = () => {
-        this.groupChatID = Math.abs(this.hashString(this.currentUserID) - this.hashString(this.state.currentPeerUser.id) ).toString();
-        firebase.firestore()
-        .collection("Message")
-        .doc(this.groupChatID)
-        .collection(this.groupChatID)
-        .onSnapshot((Snapshot) => {
-            Snapshot.docChanges().forEach((changed) => {
+            currentPeerUser: item.dataUser
+        });
+        
+        if( this.currentUser && item.dataUser.id !== this.currentUser.id  ) {
+            this.groupChatID = Math.abs(this.hashString(item.dataUser.id) - this.hashString(this.currentUser.id ) ).toString();
+            //console.log(this.groupChatID)
+            let listMessages = [];
+            await firebase.firestore()
+            .collection("Message")
+            .doc(this.groupChatID)
+            .collection(this.groupChatID)
+            .onSnapshot((Snapshot) => {
+               
+                Snapshot.docChanges().forEach((changed) => {
+                    listMessages.push(changed.doc.data());
+                })
+                console.log("Snapshot send current peer",listMessages)
                 this.setState({
-                    listMessage: changed.doc.data() 
-                });
+                    listMessages: listMessages,
+                })
             })
-        })
+        }
+        
     }
 }
 

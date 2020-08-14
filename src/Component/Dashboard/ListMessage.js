@@ -37,11 +37,12 @@ class ListMessage extends React.Component {
     render() {
         //console.log( this.props.listMessage )
         var result = null;
-         
-        if(  this.props.listMessage.length > 0 ) {
+        console.log(this.props.listMessages)
+        if(  this.props.listMessages.length > 0 ) {
+            //console.log(this.props.currentUser);
+            //console.log(this.props.currentPeerUser)
             let previousMessage = null;
-            
-            result = this.props.listMessage.map((item,index) => {
+            result = this.props.listMessages.map((item,index) => {
                 //console.log(item)
                 let boolCheck = false;
                     if( previousMessage === item.idFrom ) {
