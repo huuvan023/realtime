@@ -35,13 +35,13 @@ class ListMessage extends React.Component {
     }
  
     render() {
-        console.log(this.props.currentUserID, this.props.currentPeerUserid )
+        //console.log( this.props.listMessage )
         var result = null;
          
-        if(  this.props.listMessages.length > 0 ) {
+        if(  this.props.listMessage.length > 0 ) {
             let previousMessage = null;
             
-            result = this.props.listMessages.map((item,index) => {
+            result = this.props.listMessage.map((item,index) => {
                 //console.log(item)
                 let boolCheck = false;
                     if( previousMessage === item.idFrom ) {
@@ -51,9 +51,11 @@ class ListMessage extends React.Component {
                         boolCheck = false;
                     }
                     previousMessage = item.idFrom;
+                    
                 switch( item.type ) {
+                    
                     case 1 :
-                        if( item.idFrom === this.props.currentUserID ) {
+                        if( item.idFrom === this.props.currentUser.id ) {
                             return (
                                 <div className= "msg-dpl-r" key = { index } >
                                     <div style={ boolCheck ? { "margin":"0 50px 0 auto"} : { "margin":"0 10px 0 auto"} } >
@@ -67,7 +69,7 @@ class ListMessage extends React.Component {
                                 </div>
                             )
                         }
-                        if ( item.idFrom === this.props.currentPeerUserid ) {
+                        if ( item.idFrom === this.props.currentPeerUser.id ) {
                             return (
                                 <div key={ index } className="msg-dpl">
                                     { boolCheck ? "" : <Avatar/> }
@@ -83,9 +85,12 @@ class ListMessage extends React.Component {
                             )
                         }
                         break;
-                    case 0 :
-                         
-                        if( item.idFrom === this.props.currentUserID ) {
+                    case 0:
+                        //console.log("vo dc type 0")
+                        //console.log(this.props.currentUser)
+                        //console.log(this.props.currentPeerUser)
+                        if( item.idFrom === this.props.currentUser.id ) {
+                            //console.log(item)
                             return (
                                 <div className= "msg-dpl-r" key = { index } >
                                     <div style={ boolCheck ? { "margin":"0 50px 0 auto"} : { "margin":"0 10px 0 auto"} }>
@@ -101,7 +106,7 @@ class ListMessage extends React.Component {
                                 </div>
                             )
                         }
-                        if ( item.idFrom === this.props.currentPeerUserid ) {
+                        if ( item.idFrom === this.props.currentPeerUser.id ) {
                             return (
                                 <div key={ index } className="msg-dpl">
                                     { boolCheck ? "" : <Avatar/> }

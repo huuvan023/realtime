@@ -3,6 +3,7 @@ import Content from "react-panelgroup";
 import ModalAddFiend from './ModalAddFriend';
 import { MDBContainer } from "mdbreact"; 
 import ListUser from './ListUser'
+import { connect } from "react-redux"
 
 class TabChat extends React.Component {
     constructor(props){
@@ -46,6 +47,7 @@ class TabChat extends React.Component {
         this.props.fetchPeerMessage(user);
     }
     render(){
+        //console.log(this.props.dataUser)
         var dropStyle = "";
         if( this.state.onOpenDropTitle ) {
             dropStyle = "block";
@@ -65,7 +67,7 @@ class TabChat extends React.Component {
                     <div className="chatList">
                     <div className="header" id="test" >
                         <div className="usrName">
-                            Chat - { this.props.currentUserName }
+                            Chat - { this.props.dataUser.userData.data.name }
                         </div>
                         <div className="search">
                             <input onChange={ (e) => { this.props.onFilterUser(e.target.value) } } type="text" placeholder="Tìm..."/>
@@ -105,4 +107,9 @@ class TabChat extends React.Component {
         );
     }
 }
-export default TabChat;
+const mapStateToProps = (state) => {
+    return {
+        dataUser: state.user
+    }
+}
+export default connect(mapStateToProps,null)(TabChat);

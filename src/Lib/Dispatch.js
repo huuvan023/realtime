@@ -239,21 +239,21 @@ export const fetchPeerMessage = ( userID,item,listMessages ) => {
     }
 }
 
-export const sendMessage = ( infor,content,type ) => {
+export const sendMessage = ( content,currentUser,currentPeerUser,type ) => {
     return async (dispatch) => {
-         
-        var listMessage = [];
-        var userMessage = [];
-        var currentUserID = infor.userID;
-        var currentPeerUser = infor.conversationWith;
+        console.log(content,currentUser,currentPeerUser,type)
+        console.log(currentUser.id,currentPeerUser.id)
+        var currentUserID = currentUser.id;
+        var currentPeerUserID = currentPeerUser.id;
+        
         if( type === 1 ) {
             
             if( content.trim() === "" ) {
                 return 
             }
             var groupChatID = null;
-            if( currentUserID && currentPeerUser ) {
-                groupChatID = Math.abs(hashString(currentUserID) - hashString(currentPeerUser) ).toString();
+            if( currentUserID && currentPeerUserID ) {
+                groupChatID = Math.abs(hashString(currentUserID) - hashString(currentPeerUserID) ).toString();
             }
             let today = new Date();
             let date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
@@ -262,7 +262,7 @@ export const sendMessage = ( infor,content,type ) => {
 
             const itemMessage = {
                 idFrom: currentUserID,
-                idTo: currentPeerUser,
+                idTo: currentPeerUserID,
                 timestamp: timestamp,
                 content: content.trim(),
                 type: type
@@ -283,23 +283,8 @@ export const sendMessage = ( infor,content,type ) => {
                 .collection(groupChatID)
                 .doc(timestamp)
                 .set(itemMessage)
-                .then( async result => {
-                     
-                    await firebase.firestore()
-                        .collection("Message")
-                        .doc(groupChatID)
-                        .collection(groupChatID)
-                        .onSnapshot(async (Snapshot) => {
-                            console.log("vo dc snapshot")
-                            await Snapshot.docChanges().forEach( item =>{ 
-                                userMessage.push(item.doc.data())
-            
-                            })
-                            console.log(userMessage)
-                            console.log("dispatch ne")
-                            
-                        })
-                    
+                .then(  result => {
+                    console.log("sended successfully!")
                 })
                 
 
@@ -364,5 +349,29 @@ export const sendMessage = ( infor,content,type ) => {
         }*/
         
   
+    }
+}
+export const onSetCurrentPeer = ( item ) => {
+    return (dispatch) => {
+        dispatch( action.onSetCurrentPeer(item))
+    }
+}
+export const fetchMessage = (peerID,userID) => {
+    return async (dispatch) => {
+        let listMSGArr = [];
+        let groupChatID = Math.abs(hashString(peerID) - hashString(userID) ).toString();
+        //console.log("disatch out.")
+            await firebase.firestore()
+        .collection("Message")
+        .doc(groupChatID)
+        .collection(groupChatID)
+        .onSnapshot( async (Snapshot) => {
+            //console.log("dispatch in 0")
+            await Snapshot.docChanges().forEach((changed) => {
+                    listMSGArr.push(changed.doc.data());
+            })
+            //console.log("dispatch in",listMSGArr)
+            dispatch(action.fetchMessage(listMSGArr))
+        })
     }
 }

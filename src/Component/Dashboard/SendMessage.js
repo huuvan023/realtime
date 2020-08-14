@@ -1,5 +1,7 @@
 import React,{ Fragment } from 'react'
 import Sticker from './Stickers';
+import { connect } from 'react-redux'
+import { sendMessage } from './../../Lib/Dispatch'
 
 class SendMessage extends React.Component{
     constructor(props){
@@ -31,7 +33,8 @@ class SendMessage extends React.Component{
                             <input value={ this.state.content } type="text" 
                             onChange = { (e) => this.setState({ content: e.target.value }) } 
                             name="messageInputField" placeholder="Type your message..."/>
-                            <div onClick = { () => { alert("Sended! ") } } className="divi">
+                            <div onClick = { this.onSendMessage } 
+                            className="divi">
                             <i className="fas fa-paper-plane"></i>
                             </div>
                         </div>
@@ -40,5 +43,15 @@ class SendMessage extends React.Component{
             </Fragment>
         );
     }
+    onSendMessage = (currentUser,currentPeer) => {
+        this.props.onSendMessage(this.state.content,this.props.currentUser,this.props.currentPeerUser,1)
+    }
 }
-export default SendMessage
+const mapDispatchToProps = (dispatch,props) => {
+    return {
+        onSendMessage: (a,b,c,d) => {
+            dispatch(sendMessage(a,b,c,d))
+        }
+    }
+}
+export default connect(null,null)(SendMessage);

@@ -7,21 +7,52 @@ import ModifiedMessagePeer from './ButtonOpenModifiedMessage';
 import ListUser from './ListUser';
 import { connect } from 'react-redux';
 import TabChat from './TabChat'
-import { fetchPeerMessage } from './../../Lib/Dispatch';
+import { fetchPeerMessage,fetchMessage } from './../../Lib/Dispatch';
 import SendMessage from './SendMessage';
 
 class Main extends React.Component{
- 
+    constructor(props) {
+        super(props);
+        this.state = {
+
+        }
+        this.receiveProps = false ;
+
+    }
+    async componentWillMount() {
+        if( this.props.currentPeerUser   ){
+            //console.log("receive prosp user")
+            await this.props.onFetchMessagse(this.props.currentPeerUser.id,this.props.currentUser.id);
+            this.receiveProps = true
+        }
+         
+    }
+    async componentDidUpdate() {
+        if( this.props.currentPeerUser   ){
+            //console.log("receive prosp user")
+            //await this.props.onFetchMessagse(this.props.currentPeerUser.id,this.props.currentUser.id);
+            
+        }
+    }
+    componentWillUnmount() { 
+        this.receiveProps = false;
+    }
     render(){   
+        console.log(this.props.listMessage.length)
         let renderListMSG = "";
-        /*
-        if( typeof this.props.peerMessages.messages !== "undefined" ) {
+        //console.log(this.props.currentUser,this.props.currentPeerUser)
+        //console.log(this.props.messages)
+        //console.log("render main")
+        if( this.props.currentPeerUser ) {
+            //console.log("vo dc render list msg")
             renderListMSG = <ListMessage 
-             
-            currentUserID = { this.props.currentUser }
-            currentPeerUserid = { this.props.currentPeerUser }
-            listMessages ={ this.props.listMessages } />
-        } */
+                currentUser = { this.props.currentUser }
+                currentPeerUser = { this.props.currentPeerUser }
+                listMessage = { this.props.listMessage } />
+        } 
+        else {
+            renderListMSG = ""
+        }
         return(
             <Fragment>
                 <PanelGroup direction="row" 
@@ -63,7 +94,11 @@ class Main extends React.Component{
                     </div>
                 </div>
 
-               <SendMessage />
+               <SendMessage 
+                currentUser = { this.props.currentUser }
+                currentPeerUser = { this.props.currentPeerUser }
+                onSendMessage = { this.props.onSendMessage }
+               />
 
                 </main>
                 </Content>
@@ -85,6 +120,10 @@ const mapDispatchToProps = ( dispatch, props ) => {
          
         onFetchPeerMessages: async (userID,item,listMessages) => {
             await dispatch(fetchPeerMessage( userID,item,listMessages ))
+        },
+        onFetchMessagse: (peerID,userID) => {
+            //console.log(" dispatch msg")
+            dispatch( fetchMessage(peerID,userID) )
         }
     }
 }

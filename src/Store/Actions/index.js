@@ -65,7 +65,7 @@ export const fetchAllMessage = (message) => {
     }
 }
 export const updatePeerMessages = ( message,converWith,userID ) => {
-    console.log(message)
+     
     return {
         messages: {
             conversationWith: converWith,
@@ -73,5 +73,18 @@ export const updatePeerMessages = ( message,converWith,userID ) => {
             userID: userID
         },
         type: action.UPDATE_PEER_MESSAGES
+    }
+}
+export const onSetCurrentPeer = ( item ) => {
+    return { 
+        dataUser: item.dataUser,
+        type: action.ONSET_CURRENTPEER
+    }
+}
+export const fetchMessage = ( messages ) => {
+    //console.log(messages)
+    return {
+        type : action.FETCH_LISTEN_MESSAGE,
+        messages,
     }
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import firebase from './../../Services/Firebase'
 import { connect } from 'react-redux';
-import { fetchPeerMessage } from './../../Lib/Dispatch';
+import { onSetCurrentPeer } from './../../Lib/Dispatch';
 
 
 class ListUser extends React.Component {
@@ -19,6 +19,7 @@ class ListUser extends React.Component {
     onsetCurrentPeer = async() => {
         let { item } = this.props;
         await this.props.onSetActivePeerUser(this.props.item);
+        await this.props.setCurrentPeer( this.props.item )
     }  
     hashString = (string) => {
         let hash = 0;
@@ -29,6 +30,7 @@ class ListUser extends React.Component {
         return hash;
     }
     render(){
+    
         let messageSumDisplay = "mesage";
         if( this.groupChatID !== null && this.state.checkClickUser === true )
         {
@@ -73,8 +75,16 @@ class ListUser extends React.Component {
 const mapStateToProps = (state) => {
     return {
         dataUser: state.user,
+        peerUser: state.peerUser,
         messages: state.messages
     }
 }
+const mapDispatchToProps = ( dispatch, props ) => {
+    return {
+        setCurrentPeer: (item) => {
+            dispatch( onSetCurrentPeer(item) )
+        }
+    }
+}
  
-export default connect(mapStateToProps,null)(ListUser);
+export default connect(mapStateToProps,mapDispatchToProps)(ListUser);

@@ -5,15 +5,10 @@ var initialState = {}
 const user = ( state = initialState, action ) => {
     switch( action.type ) {
         case type.FETCH_USER:
-            /*const uniqueArray = action.listUsers.data.filter((item, index) => {
-                action.userData.data.indexOf(action.userData.data) === index
-            })
-
-            console.log(uniqueArray)*/
-            
             state = {
                 userData: action.userData,
-                listUsers: action.listUsers
+                listUsers: action.listUsers,
+                peerUser: null,
             };
             return state;
             break;
