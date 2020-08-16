@@ -26,11 +26,11 @@ class ListUser extends React.Component {
         return hash;
     }
     render(){
-    
+        console.log(this.props.lastMessage)
         let messageSumDisplay = "mesage";
-        if( this.groupChatID !== null && this.state.checkClickUser === true )
+        if( this.props.lastMessage )
         {
-            switch( this.state.messageSum.type ) {
+            switch( this.props.lastMessage.type ) {
                 case 0:
                     messageSumDisplay = this.state.messageSum.content;
                     break;
@@ -47,7 +47,7 @@ class ListUser extends React.Component {
             <div onClick={ this.onsetCurrentPeer } className = { this.props.className }>
                     <div className="messageCard">
                         <div>
-                            <img src="./avt.jpg" alt="" />
+                            <img src="./user.svg" alt="" />
                         </div>
                         <div className="mess-summary">
                             <div className="head-summary">

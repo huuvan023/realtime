@@ -1,19 +1,19 @@
 const Sticker = {
     stickers: [
     {
-        name:"angry bird 1",
-        src:"./Assets/birf1.gif",
+        name:"quoobe 3",
+        src:"./Assets/qoobe3.gif",
     },
     {
-        name:"angry bird 3",
-        src:"./Assets/bird3.gif",
+        name:"quoobe 4",
+        src:"./Assets/qoobe4.gif",
     },
     {
-        name:"qooobe 1",
+        name:"qoobe 1",
         src:"./Assets/qoobe1.gif",
     },
     {
-        name:"qooobe 2",
+        name:"qoobe 2",
         src:"./Assets/qoobe2.gif",
     }
     ],

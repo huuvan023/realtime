@@ -2,12 +2,10 @@ import React, { Fragment } from 'react';
 import PanelGroup from "react-panelgroup";
 import Content from "react-panelgroup";
 import ListMessage from './ListMessage';
-import MainBody from './MainBody';
 import ModifiedMessagePeer from './ButtonOpenModifiedMessage';
-import ListUser from './ListUser';
-import { connect } from 'react-redux';
 import TabChat from './TabChat'
 import SendMessage from './SendMessage';
+import Welcome from './Welcome';
 
 class Main extends React.Component{
     render(){  
@@ -18,12 +16,16 @@ class Main extends React.Component{
                         { size: 300, minSize: 290, maxSize: 400, resize: "dynamic"},
                       ]}>
                 <TabChat status = { this.props.status }
+                        lastMessage = { this.props.listMessages ? this.props.listMessages[this.props.listMessages.length - 1] : null }
+                        onFilterUser = { this.props.onFilterUser }
                         fetchPeerMessage = { this.props.fetchPeerMessage }
-                        viewUsers = {this.props.viewUsers}/>
+                        currentUser = { this.props.currentUser ? this.props.currentUser : null  }
+                        viewUsers = {this.props.listUsers}/>
                 <Content>
                 <main className="bodyMessage">
-                <div className="mainbd-head" >
-                    <img src="./avt.jpg" alt="" />
+                    
+                <div style = { this.props.currentPeerUser ? { "display":"flex" } : { "display":"none" } } className="mainbd-head" >
+                    <img src="./user.svg" alt="" />
                     <div className="mainbd-h-inf">
                         <h4>{ this.props.currentPeerUser !== null ? this.props.currentPeerUser.name : "" }</h4>
                         <p>Đang online<span id="onlCir"></span></p>
@@ -39,10 +41,12 @@ class Main extends React.Component{
                             <ModifiedMessagePeer/></div>
                     </div>
                 </div>
-                <div className="wrapMessbdWrap">
+                <div style = { this.props.currentPeerUser ? { "display":"block" } : { "display":"none" } } className="wrapMessbdWrap">
                     <div className="scrollbar wrapMessbd scrollbar-juicy-peach mx-auto ">
                         <div className="mainbd-body">
-                            <div onClick={ () => alert("say Hi") } className = "sayHi-msg">
+                            <div onClick={ () => this.props.onSendMessage(2,"./sayHi.gif") } 
+                            style={ this.props.listMessages.length > 0 ? { "display":"none" } : { "display":"block" } }
+                            className = "sayHi-msg">
                                 <img src="./sayHi.gif" alt=""/>
                                 Vẫy tay chào nào!
                             </div>
@@ -60,15 +64,20 @@ class Main extends React.Component{
                         </div>
                     </div>
                 </div>
-
-               <SendMessage
-                onSendMessage = { this.props.onSendMessage } />
+                { this.props.currentPeerUser ? "" : <Welcome/> }
+                    
+               { this.props.children }
                 </main>
                 </Content>
                 
                 </PanelGroup>
             </Fragment>
         );
+    }
+    componentDidMount(){
+        if(this.messagesEnd) {
+            this.messagesEnd.scrollIntoView({})
+        } 
     }
     componentDidUpdate(){
         if(this.messagesEnd) {

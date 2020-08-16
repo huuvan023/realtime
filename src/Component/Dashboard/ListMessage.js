@@ -1,7 +1,5 @@
 import React, { Fragment } from 'react'
 import DialogDeleteMessage from './DialogDeleteMessage'
-import { connect } from 'react-redux'
-import firebase from './../../Services/Firebase'
 
 class Avatar extends React.Component {
     render(){
@@ -18,6 +16,7 @@ class ListMessage extends React.Component {
             showImage : false,
             url:"",
         }
+        this.newMessCheck = null;
     }
     showImgZoom = (url) => {
         this.setState({
@@ -25,76 +24,84 @@ class ListMessage extends React.Component {
             url: url,
         });
     }
-    hashString = (string)  => {
-        let hash = 0;
-        for ( let i = 0; i< string.length ; i++ ) {
-            hash += Math.pow(string.charCodeAt(i) * 31, string.length - i );
-            hash = hash & hash;
-        }
-        return hash;
-    }
-    componentDidUpdate(){
-        console.log("update")
-    }
+
     render() {
-        //console.log( this.props.listMessage )
-        var result = null;
-        console.log("vo dc listtt trong")
+        console.log(this.props.listMessages)
+        var result = null;         
         if(  this.props.listMessages.length > 0 ) {
-            //console.log(this.props.currentUser);
-            //console.log(this.props.currentPeerUser)
             let previousMessage = null;
+            let previousTime = null;
+            
             result = this.props.listMessages.map((item,index) => {
-                //console.log(item)
+                
                 let boolCheck = false;
-                    if( previousMessage === item.idFrom ) {
-                        boolCheck = true;
+                if( previousMessage === item.idFrom ) {
+                    boolCheck = true;
+                }
+                else {
+                    boolCheck = false;
+                }
+                if(previousTime !== null ) {
+                    if( Date.parse(item.timestamp) - Date.parse(previousTime) > 7200000 ){
+                           this.newMessCheck = item.timestamp
+                        
                     }
                     else {
-                        boolCheck = false;
+                            this.newMessCheck =  null
                     }
-                    previousMessage = item.idFrom;
-                    
+                }
+                else {
+                    this.newMessCheck = item.timestamp
+                }
+                previousTime = item.timestamp;
+                previousMessage = item.idFrom;
+                let time = new Date(item.timestamp);
+                let timeDisplay = `${time.getHours()}:${time.getMinutes()}`;
                 switch( item.type ) {
                     
                     case 1 :
                         if( item.idFrom === this.props.currentUser.id ) {
                             return (
-                                <div className= "msg-dpl-r" key = { index } >
+                                <Fragment key = { index }>
+                                { this.newMessCheck !== null ? <div  className="newdateMessage"><span>{this.newMessCheck}</span></div> : "" }
+                                <div className= "msg-dpl-r"  >
                                     <div style={ boolCheck ? { "margin":"0 50px 0 auto"} : { "margin":"0 10px 0 auto"} } >
                                     <div className="deleteMessage">
                                     <DialogDeleteMessage item = { item } />
                                     </div>
                                     <span>{ item.content }</span>
-                                    <p className="t-msg">{ item.timestamp }</p>
+                                    <p className="t-msg">{ timeDisplay }</p>
                                     </div>
                                     { boolCheck ? "" : <Avatar/> }
                                 </div>
+                                </Fragment>
                             )
                         }
                         if ( item.idFrom === this.props.currentPeerUser.id ) {
                             return (
+                                <Fragment key = { index }>
+                                { this.newMessCheck !== null ? <div  className="newdateMessage"><span>{this.newMessCheck}</span></div> : "" }
                                 <div key={ index } className="msg-dpl">
                                     { boolCheck ? "" : <Avatar/> }
                                     <div style={ boolCheck ? { "margin":"0 auto 0 50px"} : { "margin":"0 auto 0 10px"} }  >
                                         <span>{ item.content }</span>
-                                        <p className="t-msg">{ item.timestamp }</p>
+                                        <p className="t-msg">{ timeDisplay }</p>
                                         <div className="deleteMessage">
                                         <DialogDeleteMessage item = { item } />
                                             </div>
                                     </div>
                                     
                                 </div>
+                                </Fragment>
                             )
                         }
                         break;
                     case 0:
-                        //console.log("vo dc type 0")
-                        //console.log(this.props.currentUser)
-                        //console.log(this.props.currentPeerUser)
                         if( item.idFrom === this.props.currentUser.id ) {
                             //console.log(item)
                             return (
+                                <Fragment key = { index }>
+                                { this.newMessCheck !== null ? <div  className="newdateMessage"><span>{this.newMessCheck}</span></div> : "" }
                                 <div className= "msg-dpl-r" key = { index } >
                                     <div style={ boolCheck ? { "margin":"0 50px 0 auto"} : { "margin":"0 10px 0 auto"} }>
                                         <div className="deleteMessage">
@@ -103,56 +110,70 @@ class ListMessage extends React.Component {
                                         <img style={{"cursor":"pointer"}} 
                                         src={item.content} onClick={ () => { this.showImgZoom(item.content) } } alt="" />
 
-                                        <p className="t-msg">{ item.timestamp }</p>
+                                        <p className="t-msg">{ timeDisplay }</p>
                                     </div>
                                     { boolCheck ? "" : <Avatar/> }
                                 </div>
+                                </Fragment>
                             )
                         }
                         if ( item.idFrom === this.props.currentPeerUser.id ) {
                             return (
+                                <Fragment key = { index }>
+                                { this.newMessCheck !== null ? <div  className="newdateMessage"><span>{this.newMessCheck}</span></div> : "" }
                                 <div key={ index } className="msg-dpl">
                                     { boolCheck ? "" : <Avatar/> }
                                     <div style={ boolCheck ? { "margin":"0 auto 0 50px"} : { "margin":"0 auto 0 10px"} }>
                                         <img style={{"cursor":"pointer"}} 
                                         src={item.content} onClick={ () => { this.showImgZoom(item.content) } } alt="" />
 
-                                        <p className="t-msg">{ item.timestamp }</p>
+                                        <p className="t-msg">{ timeDisplay }</p>
                                         <div className="deleteMessage">
                                         <DialogDeleteMessage item = { item } />
                                         </div>
                                     </div>
                                 </div>
+                                </Fragment>
                             )
                         }
                         break;
                     case 2:
-                        if( item.idFrom === this.props.currentUserID ) {
+                        if(item.idFrom === this.props.currentUser.id ) {
                             return (
+                                <Fragment key = { index }>
+                                { this.newMessCheck !== null ? <div  className="newdateMessage"><span>{this.newMessCheck}</span></div> : "" }
                                 <div className= "msg-dpl-r" key = { index } >
                                     <div className="stickerMSG" style={ boolCheck ? { "margin":"0 50px 0 auto"} : { "margin":"0 10px 0 auto"} }>
                                         <div className="deleteMessage">
                                             <DialogDeleteMessage item = { item } />
                                         </div>
-                                        <img src={item.content} alt=""/>
+                                        <img src={item.content} alt={ item.name }/>
+                                        <p className="t-msg">{ timeDisplay }</p>
                                     </div>
                                     { boolCheck ? "" : <Avatar/> }
                                 </div>
+                                </Fragment>
                             )
                         }
-                        if ( item.idFrom === this.props.currentPeerUserid ) {
+                        if ( item.idFrom === this.props.currentPeerUser.id ) {
                             return (
+                                <Fragment key = { index }>
+                                { this.newMessCheck !== null ? <div  className="newdateMessage"><span>{this.newMessCheck}</span></div> : "" }
                                 <div key={ index } className="msg-dpl">
                                     { boolCheck ? "" : <Avatar/> }
                                     <div className="stickerMSG" style={ boolCheck ? { "margin":"0 auto 0 50px"} : { "margin":"0 auto 0 10px"} }>
-                                        <img src={item.content}  alt="" />
+                                        <img src={item.content} alt={ item.name }/>
+                                        <p className="t-msg">{ timeDisplay }</p>
                                         <div className="deleteMessage">
                                         <DialogDeleteMessage item = { item } />
                                         </div>
                                     </div>
                                 </div>
+                                </Fragment>
                             )
                         }
+                        break;
+                        default:
                         break;
                 }
             })
@@ -164,15 +185,10 @@ class ListMessage extends React.Component {
                     <i onClick = { () => this.setState({ showImage: false }) } className="fas fa-times"></i>
                     <img src={ this.state.url } alt=""/>
                 </div>
-                <div className="newdateMessage"><span>20/2/2020</span></div>
                     { result }
             </Fragment>
         )
     }
 }
-const mapStateToProps = ( state ) => {
-    return {
-        messages: state.messages
-    }
-}
-export default connect(mapStateToProps,null)(ListMessage);
+
+export default ListMessage;

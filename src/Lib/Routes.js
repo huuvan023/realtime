@@ -4,32 +4,17 @@ import NotFoundPage from '../Page/NotFoundPage';
 import LoginPage from './../Page/LoginPage';
 import RegisterPage from './../Page/RegisterPage';
 import ForgetPWPage from './../Page/ForgetPWPage';
-import { toast } from 'react-toastify';
 
-function showToast (type,message) {
-    switch(type) {
-      case 0 :
-        toast.warning(message);
-      break;
-
-      case 1 :
-        toast.success(message);
-      break;
-
-      default:
-      break;
-    }
-  }
 const routes = [
     {
         path: "/dashboard",
         exact: false,
-        main: ({history}) => <IndexPage history={ history } showToast={ showToast } />
+        main: ({history}) => <IndexPage history={ history }  />
     },
     {
         path: "/",
         exact: true,
-        main: ({history}) => <LoginPage history = { history } showToast={ showToast } />
+        main: ({history}) => <LoginPage history = { history } />
     },
     {
         path: "/forgetpassword",
